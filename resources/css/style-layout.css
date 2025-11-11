@@ -1,0 +1,23 @@
+.menu-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 15px;
+      color: #333;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .menu-item:hover {
+      background-color: #f8f9fa;
+    }
+    .menu-item i {
+      color: #004830;
+      margin-right: 10px;
+      font-size: 1.1rem;
+    }
+    .menu-item span {
+      flex-grow: 1;
+    }
+    .menu-item .bi-chevron-right {
+      color: #999;
+    }

@@ -7,17 +7,17 @@
         <div id="homeCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <img src="{{ asset('storage/banners/slide1.jpg') }}" class="d-block w-100" alt="...">
+                    <img src="{{ asset('images/banners/slide1.jpg') }}" class="d-block w-100" alt="...">
                     <div class="carousel-caption d-none d-md-block">
                         <h3 class="display-4 fw-bold">Tinh Hoa Từ Tổ Yến</h3>
                         <p class="lead">Chất lượng từ tâm</p>
                     </div>
                 </div>
             <div class="carousel-item">
-                <img src="{{ asset('storage/banners/slide2.jpg') }}" class="d-block w-100" alt="...">
+                <img src="{{ asset('images/banners/slide2.jpg') }}" class="d-block w-100" alt="...">
             </div>
             <div class="carousel-item">
-                <img src="{{ asset('storage/banners/slide3.jpg') }}" class="d-block w-100" alt="...">
+                <img src="{{ asset('images/banners/slide3.jpg') }}" class="d-block w-100" alt="...">
             </div>
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#homeCarousel" data-bs-slide="prev">

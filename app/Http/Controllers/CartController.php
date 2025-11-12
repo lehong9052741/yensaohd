@@ -26,24 +26,27 @@ class CartController extends Controller
                 'name' => $product->name,
                 'price' => $product->price,
                 'quantity' => $qty,
+                'image' => $product->image,
             ];
         }
 
         session()->put('cart', $cart);
 
-        return redirect()->back()->with('success', 'Đã thêm vào giỏ hàng');
+        return redirect()->back()->with('cart_success', 'Đã thêm "' . $product->name . '" vào giỏ hàng');
     }
 
     public function remove(Request $request, $id)
     {
         $cart = session()->get('cart', []);
+        $productName = '';
 
         if (isset($cart[$id])) {
+            $productName = $cart[$id]['name'];
             unset($cart[$id]);
             session()->put('cart', $cart);
         }
 
-        return redirect('/cart');
+        return redirect()->back()->with('cart_removed', 'Đã xóa "' . $productName . '" khỏi giỏ hàng');
     }
 
     public function update(Request $request, $id)

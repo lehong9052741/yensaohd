@@ -30,3 +30,23 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Test route to add sample cart items
+Route::get('/test-cart', function () {
+    $products = \App\Models\Product::take(3)->get();
+    $cart = [];
+    
+    foreach ($products as $index => $product) {
+        $cart[$product->id] = [
+            'id' => $product->id,
+            'name' => $product->name,
+            'price' => $product->price,
+            'quantity' => $index + 1,
+            'image' => $product->image ?? 'products/default.jpg'
+        ];
+    }
+    
+    session(['cart' => $cart]);
+    
+    return redirect('/')->with('cart_success', 'Đã thêm ' . count($cart) . ' sản phẩm vào giỏ hàng!');
+});

@@ -53,6 +53,46 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+    
+    // Cart dropdown hover handling
+    const cartDropdown = document.querySelector('.dropdown .header-cart-dropdown');
+    const cartLink = document.querySelector('.dropdown > a[href="/cart"]');
+    
+    if (cartLink && cartDropdown) {
+        let isHoveringCart = false;
+        let isHoveringDropdown = false;
+        
+        // Show dropdown on hover
+        cartLink.parentElement.addEventListener('mouseenter', function() {
+            isHoveringCart = true;
+            cartDropdown.classList.add('show');
+        });
+        
+        cartLink.parentElement.addEventListener('mouseleave', function() {
+            isHoveringCart = false;
+            setTimeout(function() {
+                if (!isHoveringDropdown) {
+                    cartDropdown.classList.remove('show');
+                }
+            }, 100);
+        });
+        
+        cartDropdown.addEventListener('mouseenter', function() {
+            isHoveringDropdown = true;
+        });
+        
+        cartDropdown.addEventListener('mouseleave', function() {
+            isHoveringDropdown = false;
+            setTimeout(function() {
+                if (!isHoveringCart) {
+                    cartDropdown.classList.remove('show');
+                }
+            }, 100);
+        });
+    }
+    
+    // Handle remove item from cart - just let the form submit normally
+    // The controller will handle redirect with session flash message
 });
 
 // Header scroll effects

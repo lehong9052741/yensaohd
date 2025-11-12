@@ -6,7 +6,7 @@
             <div class="d-flex align-items-center justify-content-between header-topbar-container">
                 <!-- Logo -->
                 <a class="d-flex align-items-center text-dark text-decoration-none" href="/">
-                    <img src="{{ asset('storage/banners/logo.png') }}" 
+                    <img src="{{ asset('images/banners/logo.png') }}" 
                          alt="Yến Sào Hoàng Đăng" 
                          width="100" 
                          height="100" 
@@ -55,25 +55,33 @@
                     <!-- Cart -->
                     <div class="ms-2 dropdown">
                         @php $cart = session('cart', []); $cartCount = count($cart); $total = array_reduce($cart, function($s,$i){return $s+($i['price']*$i['quantity']);},0); @endphp
-                        <a class="text-white d-flex align-items-center text-decoration-none position-relative" href="/cart" data-bs-toggle="dropdown" data-bs-auto-close="outside">
-                            <span class="material-icons-outlined text-white header-icon">shopping_cart</span>
+                        <a class="text-white d-flex align-items-center text-decoration-none position-relative" href="/cart">
+                            <div class="position-relative">
+                                <span class="material-icons-outlined text-white header-icon">shopping_cart</span>
+                                @if($cartCount > 0)
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-white fw-bold" style="font-size: 0.7rem;">{{ $cartCount }}</span>
+                                @endif
+                            </div>
                             <div class="d-none d-md-block ms-2">
                                 <div class="fw-medium">Giỏ hàng</div>
                             </div>
-                            @if($cartCount > 0)
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark">{{ $cartCount }}</span>
-                            @endif
                         </a>
                         <div class="dropdown-menu dropdown-menu-end p-0 shadow header-cart-dropdown">
                             <div class="p-3 brand-light border-bottom"><strong>Giỏ hàng ({{ $cartCount }})</strong></div>
                             <div class="header-cart-content p-2">
                                 @forelse($cart as $id => $item)
-                                    <div class="d-flex gap-2 align-items-center py-2 border-bottom">
+                                    <div class="d-flex gap-2 align-items-center py-2 border-bottom position-relative cart-item">
                                         <img src="{{ asset('storage/' . ($item['image'] ?? '')) }}" alt="" class="rounded header-cart-item-img">
                                         <div class="flex-grow-1">
                                             <div class="fw-medium">{{ $item['name'] }}</div>
                                             <div class="small text-muted">{{ number_format($item['price'],0,',','.') }}₫ × {{ $item['quantity'] }}</div>
                                         </div>
+                                        <form action="/cart/remove/{{ $id }}" method="POST" class="d-inline remove-cart-item-form">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-link text-danger p-0 remove-cart-btn">
+                                                <i class="bi bi-trash" style="font-size: 1.2rem;"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 @empty
                                     <div class="text-center py-4 text-muted">
@@ -88,7 +96,7 @@
                                         <strong>Tổng:</strong>
                                         <strong>{{ number_format($total,0,',','.') }}₫</strong>
                                     </div>
-                                    <a href="/cart" class="btn btn-warning w-100 text-warning">Xem giỏ hàng</a>
+                                    <a href="/cart" class="btn btn-warning w-100 text-dark fw-bold">Xem giỏ hàng</a>
                                 </div>
                             @endif
                         </div>

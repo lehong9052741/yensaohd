@@ -34,15 +34,23 @@
 
 /* Top bar styling */
 .header-topbar {
-  background-color: #1e3d37 !important;
+  background-color: #CD950C !important;
   color: #FFFFFF;
   padding: 0;
 }
 
 /* Search section */
 .header-search-btn {
-  background-color: #FFF4C1;
+  background-color: #e0e0e0;
   border: 1px solid rgba(0,0,0,0.08);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.header-search-btn:hover {
+  background-color: #FFF4C1;
+  border-color: #ffc107;
+  color: #000 !important;
 }
 
 /* Icons and contact info */
@@ -54,9 +62,58 @@
   font-size: 0.9rem;
 }
 
+/* Hover effect for header items - removed borders from phone, cart, login */
+
 /* Cart dropdown */
 .header-cart-dropdown {
   width: 320px;
+  margin-top: 0.25rem !important;
+}
+
+/* Keep dropdown open when hovering over cart or dropdown itself */
+.dropdown:hover > .header-cart-dropdown {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Prevent dropdown from closing when hovering inside */
+.header-cart-dropdown:hover {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Cart item hover effect */
+.header-cart-content .cart-item:hover {
+  background-color: #f8f9fa;
+  transition: background-color 0.2s ease;
+}
+
+.header-cart-content a:hover .d-flex {
+  background-color: #f8f9fa;
+}
+
+/* Remove button styling */
+.remove-cart-btn {
+  opacity: 0.6;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.remove-cart-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.cart-item {
+  position: relative;
+}
+
+/* Cart badge positioning */
+.header-cart-dropdown .badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
 }
 
 .header-cart-content {
@@ -85,10 +142,10 @@
 
 /* Logo */
 .header-logo {
-  height: 100px;
-  width: 100px;
-  max-height: 100px;
-  max-width: 100px;
+  height: 120px;
+  width: 120px;
+  max-height: 120px;
+  max-width: 120px;
   display: block;
   object-fit: contain;
 }
@@ -96,11 +153,21 @@
 /* Header main navigation styling */
 #mainHeader .navbar, #mainHeader .header-nav {
   background-color: #ffffff !important;
+  border-bottom: none !important;
 }
 
 #mainHeader .navbar .nav-link, #mainHeader .header-nav .nav-link {
   color: #000 !important;
   font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+#mainHeader .navbar .nav-link:hover, #mainHeader .header-nav .nav-link:hover {
+  border-color: #ffc107;
+  background-color: #fff9e6;
 }
 
 /* Categories button styling with light yellow theme */
@@ -108,6 +175,8 @@
   color: #000 !important;
   font-weight: 600;
   border-color: rgba(0,0,0,0.08);
+  border-radius: 8px;
+  border-width: 2px;
   transition: all 0.3s ease;
 }
 
@@ -118,7 +187,7 @@
   background-color: #fff9e6 !important;
   border-color: #ffc107 !important;
   color: #000 !important;
-  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.12);
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.18);
 }
 
 /* When the dropdown parent has .show (open), style the button */
@@ -140,6 +209,13 @@
 /* Ensure dropdown is visible and positioned correctly */
 #mainHeader .dropdown {
   position: relative;
+}
+
+/* Show dropdown on hover */
+#mainHeader .dropdown:hover > .dropdown-menu {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 #mainHeader .dropdown-menu {
@@ -354,12 +430,27 @@ body {
   transition: min-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Hide logo when scrolled */
 #mainHeader.header-scrolled .header-logo {
-  height: 50px !important;
-  width: 50px !important;
-  max-height: 50px !important;
-  max-width: 50px !important;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  display: none !important;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Adjust layout when scrolled - spread items evenly */
+#mainHeader.header-scrolled .header-topbar-container {
+  justify-content: space-between !important;
+  gap: 1.5rem !important;
+}
+
+#mainHeader.header-scrolled .header-topbar-container > a:first-child {
+  display: none !important;
+}
+
+/* Adjust search width when scrolled */
+#mainHeader.header-scrolled .flex-grow-1 {
+  flex-grow: 1 !important;
+  max-width: none !important;
 }
 
 /* Show/hide categories dropdown based on scroll */

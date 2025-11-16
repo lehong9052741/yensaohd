@@ -4,13 +4,16 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\VNPayController;
 
 Route::get('/', [ProductController::class, 'home'])->name('home');
 
 // Products
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{product}', [ProductController::class, 'show']);
+Route::get('/promotions', [ProductController::class, 'promotions']);
 
 // Cart
 Route::get('/cart', [CartController::class, 'index']);
@@ -20,10 +23,16 @@ Route::post('/cart/clear', [CartController::class, 'clear']);
 Route::post('/cart/update/{id}', [CartController::class, 'update']);
 Route::get('/checkout', [CartController::class, 'checkout']);
 Route::post('/checkout', [CartController::class, 'processCheckout']);
+Route::get('/order-confirmation', [CartController::class, 'orderConfirmation']);
+
+// VNPay payment routes
+Route::get('/vnpay/return', [VNPayController::class, 'return'])->name('vnpay.return');
 
 // Admin routes (protected)
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::resource('products', AdminProductController::class);
+    Route::resource('orders', AdminOrderController::class)->only(['index', 'show', 'destroy']);
+    Route::post('orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.updateStatus');
 });
 
 // Simple auth routes (login/logout) used by middleware

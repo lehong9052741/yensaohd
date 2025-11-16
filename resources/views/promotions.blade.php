@@ -1,23 +1,30 @@
 @extends('layouts.master')
 
 @section('content')
-<div class="container my-5 product-padding">
+<div class="container my-5">
     <!-- Page Header -->
-    <div class="mb-4">
-        <h2 class="fw-bold mb-3">
-            @if(request('search'))
-                Kết quả tìm kiếm: "{{ request('search') }}"
-            @elseif(request('category'))
-                {{ request('category') }}
-            @else
-                Tất cả sản phẩm
-            @endif
-        </h2>
-        
-        <!-- Search Bar -->
-        <div class="row mb-4">
-            <div class="col-md-6 text-start">
-                <p class="text-muted mt-2">Tổng có <strong>{{ $products->total() }}</strong> sản phẩm</p>
+    <div class="mb-5 text-center">
+        <h1 class="fw-bold mb-3">
+            <i class="bi bi-fire text-danger"></i> 
+            KHUYẾN MÃI HOT
+        </h1>
+        <p class="text-muted fs-5">Săn ngay các sản phẩm đang giảm giá hấp dẫn</p>
+        <hr class="w-25 mx-auto border-danger border-2">
+    </div>
+
+    <!-- Filter & Count -->
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-6">
+            <h5 class="mb-0">
+                <span class="badge bg-danger">{{ $products->total() }} sản phẩm</span> 
+                đang được khuyến mãi
+            </h5>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="btn-group" role="group">
+                <a href="/promotions" class="btn btn-outline-danger {{ !request('sort') ? 'active' : '' }}">Tất cả</a>
+                <a href="/promotions?sort=discount" class="btn btn-outline-danger {{ request('sort') == 'discount' ? 'active' : '' }}">Giảm giá cao</a>
+                <a href="/promotions?sort=newest" class="btn btn-outline-danger {{ request('sort') == 'newest' ? 'active' : '' }}">Mới nhất</a>
             </div>
         </div>
     </div>
@@ -33,8 +40,18 @@
                              class="product-block-image" alt="{{ $product->name }}"
                              onclick="window.location.href='{{ url('/products/' . $product->id) }}'">
                         @if($product->has_sale)
-                        <div class="product-block-discount" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">-{{ $product->discount_percent }}%</div>
+                        <div class="product-block-discount" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">
+                            -{{ $product->discount_percent }}%
+                        </div>
                         @endif
+                        
+                        <!-- Sale Badge -->
+                        <div class="position-absolute top-0 start-0 m-2">
+                            <span class="badge bg-danger">
+                                <i class="bi bi-lightning-fill"></i> SALE
+                            </span>
+                        </div>
+                        
                         <form action="{{ url('/cart/add/' . $product->id) }}" method="POST" class="add-to-cart-form d-inline" data-product-name="{{ $product->name }}">
                             @csrf
                             <input type="hidden" name="quantity" value="1">
@@ -44,12 +61,19 @@
                         </form>
                     </div>
                     <div class="product-block-body" style="cursor: pointer;">
-                        <h5 class="product-block-title" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">{{ $product->name }}</h5>
+                        <h5 class="product-block-title" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">
+                            {{ $product->name }}
+                        </h5>
                         <div class="product-block-price-section text-end" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">
                             @if($product->has_sale)
                             <div>
                                 <span class="product-block-price-old">{{ number_format($product->original_price ?? $product->price) }}₫</span>
-                                <span class="product-block-price-new">{{ number_format($product->display_price) }}₫</span>
+                                <span class="product-block-price-new text-danger">{{ number_format($product->display_price) }}₫</span>
+                            </div>
+                            <div class="mt-1">
+                                <small class="text-danger fw-bold">
+                                    Tiết kiệm: {{ number_format(($product->original_price ?? $product->price) - $product->display_price) }}₫
+                                </small>
                             </div>
                             @else
                             <div><span class="product-block-price-new">{{ number_format($product->price) }}₫</span></div>
@@ -62,7 +86,9 @@
                                 @endif
                             </div>
                         </div>
-                        <button class="btn product-block-btn w-100" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">Đặt hàng ngay</button>
+                        <button class="btn product-block-btn w-100" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">
+                            <i class="bi bi-cart-plus me-2"></i>Mua ngay
+                        </button>
                     </div>
                 </div>
             </div>
@@ -75,12 +101,39 @@
         </div>
     @else
         <div class="text-center py-5">
-            <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
-            <p class="text-muted mt-3 fs-5">Không tìm thấy sản phẩm nào</p>
-            <a href="/products" class="btn btn-primary mt-2">
-                <i class="bi bi-arrow-left"></i> Xem tất cả sản phẩm
+            <i class="bi bi-tag" style="font-size: 5rem; color: #ccc;"></i>
+            <h3 class="text-muted mt-3">Hiện tại chưa có sản phẩm khuyến mãi nào</h3>
+            <p class="text-muted">Vui lòng quay lại sau hoặc xem các sản phẩm khác</p>
+            <a href="/products" class="btn btn-primary mt-3">
+                <i class="bi bi-shop me-2"></i>Xem tất cả sản phẩm
             </a>
         </div>
+    @endif
+
+    <!-- Promotion Banner -->
+    @if($products->count() > 0)
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="alert alert-danger border-0 shadow-sm" role="alert">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4 class="alert-heading mb-2">
+                            <i class="bi bi-megaphone-fill me-2"></i>Chương trình khuyến mãi đặc biệt!
+                        </h4>
+                        <p class="mb-0">
+                            Giảm giá lên đến <strong>{{ $products->max('discount_percent') }}%</strong> cho các sản phẩm yến sào cao cấp. 
+                            Nhanh tay đặt hàng để nhận ưu đãi tốt nhất!
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <a href="/products" class="btn btn-light btn-lg">
+                            <i class="bi bi-eye me-2"></i>Xem thêm sản phẩm
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     @endif
 </div>
 

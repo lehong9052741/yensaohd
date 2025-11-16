@@ -5,12 +5,18 @@ export default defineConfig({
     plugins: [
         laravel({
             input: [
-                'resources/sass/app.scss',
-                'resources/js/app.js',
+                'resources/css/app.css',
+                'resources/css/header.css',
+                'resources/css/style-layout.css',
+                'resources/css/product.css',
                 'resources/css/footer.css',
-                'resources/js/footer.js',
                 'resources/css/product-detail.css',
                 'resources/css/checkout.css',
+                'resources/css/cart.css',
+                'resources/js/app.js',
+                'resources/js/bootstrap.js',
+                'resources/js/header.js',
+                'resources/js/footer.js'
             ],
             refresh: true,
         }),

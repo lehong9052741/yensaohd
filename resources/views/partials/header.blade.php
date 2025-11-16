@@ -67,46 +67,17 @@
                             <div class="position-relative">
                                 <span class="material-icons-outlined text-white header-icon">shopping_cart</span>
                                 @if($cartCount > 0)
-                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-white fw-bold" style="font-size: 0.7rem;">{{ $cartCount }}</span>
+                                    <span id="cart-count-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-white fw-bold" style="font-size: 0.7rem;">{{ $cartCount }}</span>
+                                @else
+                                    <span id="cart-count-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-white fw-bold d-none" style="font-size: 0.7rem;">0</span>
                                 @endif
                             </div>
                             <div class="d-none d-md-block ms-2">
                                 <div class="fw-medium">Giỏ hàng</div>
                             </div>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-end p-0 shadow header-cart-dropdown">
-                            <div class="p-3 brand-light border-bottom"><strong>Giỏ hàng ({{ $cartCount }})</strong></div>
-                            <div class="header-cart-content p-2">
-                                @forelse($cart as $id => $item)
-                                    <div class="d-flex gap-2 align-items-center py-2 border-bottom position-relative cart-item">
-                                        <img src="{{ asset('storage/' . ($item['image'] ?? '')) }}" alt="" class="rounded header-cart-item-img">
-                                        <div class="flex-grow-1">
-                                            <div class="fw-medium">{{ $item['name'] }}</div>
-                                            <div class="small text-muted">{{ number_format($item['price'],0,',','.') }}₫ × {{ $item['quantity'] }}</div>
-                                        </div>
-                                        <form action="/cart/remove/{{ $id }}" method="POST" class="d-inline remove-cart-item-form">
-                                            @csrf
-                                            <button type="submit" class="btn btn-sm btn-link text-danger p-0 remove-cart-btn">
-                                                <i class="bi bi-trash" style="font-size: 1.2rem;"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                @empty
-                                    <div class="text-center py-4 text-muted">
-                                        <span class="material-icons-outlined text-white header-cart-empty-icon">shopping_cart</span>
-                                        <p class="mt-2 mb-0">Giỏ hàng trống</p>
-                                    </div>
-                                @endforelse
-                            </div>
-                            @if($cartCount > 0)
-                                <div class="p-3 brand-light border-top">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <strong>Tổng:</strong>
-                                        <strong>{{ number_format($total,0,',','.') }}₫</strong>
-                                    </div>
-                                    <a href="/cart" class="btn btn-warning w-100 text-dark fw-bold">Xem giỏ hàng</a>
-                                </div>
-                            @endif
+                        <div id="cart-dropdown" class="dropdown-menu dropdown-menu-end p-0 shadow header-cart-dropdown">
+                            @include('partials.cart-dropdown', ['cart' => $cart, 'cartCount' => $cartCount, 'total' => $total])
                         </div>
                     </div>
                     

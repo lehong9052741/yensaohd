@@ -20,7 +20,8 @@ class Product extends Model
         'sale_price',
         'discount_percent',
         'is_best_seller',
-        'sold_count'
+        'sold_count',
+        'quantity'
     ];
 
     /**
@@ -37,5 +38,26 @@ class Product extends Model
     public function getHasSaleAttribute()
     {
         return !is_null($this->sale_price) && $this->discount_percent > 0;
+    }
+
+    /**
+     * Check if product is in stock
+     */
+    public function getInStockAttribute()
+    {
+        return $this->quantity > 0;
+    }
+
+    /**
+     * Get stock status badge
+     */
+    public function getStockStatusAttribute()
+    {
+        if ($this->quantity <= 0) {
+            return 'out_of_stock';
+        } elseif ($this->quantity <= 10) {
+            return 'low_stock';
+        }
+        return 'in_stock';
     }
 }

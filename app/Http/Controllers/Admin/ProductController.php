@@ -26,8 +26,13 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|integer|min:0',
+            'original_price' => 'nullable|integer|min:0',
+            'sale_price' => 'nullable|integer|min:0',
+            'discount_percent' => 'nullable|integer|min:0|max:100',
             'category' => 'nullable|string|max:255',
-            'image' => 'nullable|image|max:2048',
+            'quantity' => 'required|integer|min:0',
+            'is_best_seller' => 'nullable|boolean',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
         if ($request->hasFile('image')) {
@@ -35,6 +40,7 @@ class ProductController extends Controller
         }
 
         $data['slug'] = \Illuminate\Support\Str::slug($data['name']) . '-' . time();
+        $data['is_best_seller'] = $request->has('is_best_seller');
 
         Product::create($data);
 
@@ -52,8 +58,13 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|integer|min:0',
+            'original_price' => 'nullable|integer|min:0',
+            'sale_price' => 'nullable|integer|min:0',
+            'discount_percent' => 'nullable|integer|min:0|max:100',
             'category' => 'nullable|string|max:255',
-            'image' => 'nullable|image|max:2048',
+            'quantity' => 'required|integer|min:0',
+            'is_best_seller' => 'nullable|boolean',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
         if ($request->hasFile('image')) {
@@ -62,6 +73,8 @@ class ProductController extends Controller
             }
             $data['image'] = $request->file('image')->store('products', 'public');
         }
+
+        $data['is_best_seller'] = $request->has('is_best_seller');
 
         $product->update($data);
 

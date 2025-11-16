@@ -45,14 +45,12 @@
                                 <a href="{{ url('/products/' . $product->id) }}" class="text-decoration-none">
                                     <div class="card h-100 shadow-sm position-relative product-card">
                                         @if($product->has_sale)
-                                        <div class="discount-badge">
-                                            <span class="badge bg-danger fs-6">-{{ $product->discount_percent }}%</span>
-                                        </div>
+                                        <div class="product-block-discount">-{{ $product->discount_percent }}%</div>
                                         @endif
                                         <img src="{{ $product->image ? asset('storage/'.$product->image) : asset('images/products/product-1.jpg') }}" 
                                              class="card-img-top product-image" alt="{{ $product->name }}">
                                         <div class="card-body p-3">
-                                            <h6 class="card-title text-truncate mb-3 fw-bold text-start text-dark product-title">{{ $product->name }}</h6>
+                                            <h6 class="product-title-seller text-truncate mb-3 fw-bold text-start text-dark product-title">{{ $product->name }}</h6>
                                             <div class="price-section d-flex justify-content-between align-items-center mb-2">
                                                 @if($product->has_sale)
                                                 <p class="text-muted text-decoration-line-through mb-0 product-price-old">
@@ -154,149 +152,183 @@
 
     <!-- Product Blocks -->
     <div class="container">
+        <!-- Yến Thô -->
+        @if($yenTho->count() > 0)
         <section class="mb-5">
             <div class="category-title-wrapper">
                 <h2 class="category-title mb-0">Yến Thô Tự Nhiên</h2>
             </div>
             <div class="product-row">
-                @for($i=1;$i<=4;$i++)
+                @foreach($yenTho->take(4) as $product)
                 <div class="product-col">
                     <div class="product-block-card">
-                        <div class="product-block-image-wrapper">
-                            <img src="{{ asset('images/products/product-1.jpg') }}" class="product-block-image" alt="Sản phẩm Thô">
-                            @if($i % 2 == 0)
-                            <div class="product-block-discount">-20%</div>
+                        <div class="product-block-image-wrapper" style="cursor: pointer;">
+                            <img src="{{ $product->image ? asset('storage/'.$product->image) : asset('images/products/product-1.jpg') }}" 
+                                 class="product-block-image" alt="{{ $product->name }}"
+                                 onclick="window.location.href='{{ url('/products/' . $product->id) }}'">
+                            @if($product->has_sale)
+                            <div class="product-block-discount" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">-{{ $product->discount_percent }}%</div>
                             @endif
-                            <div class="product-block-cart-icon">
-                                <i class="bi bi-cart-plus text-white fs-4"></i>
-                            </div>
+                            <form action="{{ url('/cart/add/' . $product->id) }}" method="POST" class="add-to-cart-form d-inline" data-product-name="{{ $product->name }}">
+                                @csrf
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="product-block-cart-icon">
+                                    <i class="bi bi-cart-plus text-white fs-4"></i>
+                                </button>
+                            </form>
                         </div>
-                        <div class="product-block-body">
-                            <h5 class="product-block-title">Sản phẩm Thô #{{ $i }}</h5>
-                            <div class="product-block-price-section text-end">
-                                @if($i % 2 == 0)
+                        <div class="product-block-body" style="cursor: pointer;">
+                            <h5 class="product-block-title" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">{{ $product->name }}</h5>
+                            <div class="product-block-price-section text-end" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">
+                                @if($product->has_sale)
                                 <div>
-                                    <span class="product-block-price-old">1,000,000₫</span>
-                                    <span class="product-block-price-new">800,000₫</span>
+                                    <span class="product-block-price-old">{{ number_format($product->original_price ?? $product->price) }}₫</span>
+                                    <span class="product-block-price-new">{{ number_format($product->display_price) }}₫</span>
                                 </div>
                                 @else
-                                <div><span class="product-block-price-new">1,000,000₫</span></div>
+                                <div><span class="product-block-price-new">{{ number_format($product->price) }}₫</span></div>
                                 @endif
                                 <div class="mt-2">
-                                    @php $qty = rand(0, 50); @endphp
-                                    @if($qty > 0)
-                                        <span class="badge bg-success">Còn {{ $qty }} sản phẩm</span>
+                                    @if($product->quantity > 0)
+                                        <span class="badge bg-success">Còn {{ $product->quantity }} sản phẩm</span>
                                     @else
                                         <span class="badge bg-danger">Hết hàng</span>
                                     @endif
                                 </div>
                             </div>
-                            <a href="#" class="btn product-block-btn w-100">Đặt hàng ngay</a>
+                            <button class="btn product-block-btn w-100" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">Đặt hàng ngay</button>
                         </div>
                     </div>
                 </div>
-                @endfor
+                @endforeach
             </div>
             <div class="text-end mt-3">
-                <a href="/products?category=Yến+Thô" class="text-decoration-none text-primary fw-bold">
+                <a href="/products?category=Yến Thô" class="text-decoration-none text-primary fw-bold">
                     Xem tất cả <i class="bi bi-arrow-right"></i>
                 </a>
             </div>
         </section>
+        @endif
     </div>
 
+    <!-- Yến Tinh Chế -->
+    @if($yenTinhChe->count() > 0)
     <section class="mb-5 py-4">
         <div class="container">
             <div class="category-title-wrapper">
                 <h2 class="category-title mb-0">Yến Tinh Chế</h2>
             </div>
             <div class="product-row">
-                @for($i=1;$i<=4;$i++)
+                @foreach($yenTinhChe->take(4) as $product)
                 <div class="product-col">
                     <div class="product-block-card">
-                        <div class="product-block-image-wrapper">
-                            <img src="https://placehold.co/600x400/e8e8e8/333333?text=San+pham+Tinh+Che" class="product-block-image" alt="Sản phẩm Tinh Chế">
-                            @if($i % 3 == 0)
-                            <div class="product-block-discount">-15%</div>
+                        <div class="product-block-image-wrapper" style="cursor: pointer;">
+                            <img src="{{ $product->image ? asset('storage/'.$product->image) : asset('images/products/product-1.jpg') }}" 
+                                 class="product-block-image" alt="{{ $product->name }}"
+                                 onclick="window.location.href='{{ url('/products/' . $product->id) }}'">
+                            @if($product->has_sale)
+                            <div class="product-block-discount" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">-{{ $product->discount_percent }}%</div>
                             @endif
-                            <div class="product-block-cart-icon">
-                                <i class="bi bi-cart-plus text-white fs-4"></i>
-                            </div>
+                            <form action="{{ url('/cart/add/' . $product->id) }}" method="POST" class="add-to-cart-form d-inline" data-product-name="{{ $product->name }}">
+                                @csrf
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="product-block-cart-icon">
+                                    <i class="bi bi-cart-plus text-white fs-4"></i>
+                                </button>
+                            </form>
                         </div>
-                        <div class="product-block-body">
-                            <h5 class="product-block-title">Sản phẩm Tinh Chế #{{ $i }}</h5>
-                            <div class="product-block-price-section text-end">
-                                @if($i % 3 == 0)
+                        <div class="product-block-body" style="cursor: pointer;">
+                            <h5 class="product-block-title" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">{{ $product->name }}</h5>
+                            <div class="product-block-price-section text-end" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">
+                                @if($product->has_sale)
                                 <div>
-                                    <span class="product-block-price-old">1,500,000₫</span>
-                                    <span class="product-block-price-new">1,275,000₫</span>
+                                    <span class="product-block-price-old">{{ number_format($product->original_price ?? $product->price) }}₫</span>
+                                    <span class="product-block-price-new">{{ number_format($product->display_price) }}₫</span>
                                 </div>
                                 @else
-                                <div><span class="product-block-price-new">1,500,000₫</span></div>
+                                <div><span class="product-block-price-new">{{ number_format($product->price) }}₫</span></div>
                                 @endif
                                 <div class="mt-2">
-                                    @php $qty = rand(0, 50); @endphp
-                                    @if($qty > 0)
-                                        <span class="badge bg-success">Còn {{ $qty }} sản phẩm</span>
+                                    @if($product->quantity > 0)
+                                        <span class="badge bg-success">Còn {{ $product->quantity }} sản phẩm</span>
                                     @else
                                         <span class="badge bg-danger">Hết hàng</span>
                                     @endif
                                 </div>
                             </div>
-                            <a href="#" class="btn product-block-btn w-100">Đặt hàng ngay</a>
+                            <button class="btn product-block-btn w-100" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">Đặt hàng ngay</button>
                         </div>
                     </div>
                 </div>
-                @endfor
+                @endforeach
             </div>
             <div class="text-end mt-3">
-                <a href="/products?category=Yến+Tinh+Chế" class="text-decoration-none text-primary fw-bold">
+                <a href="/products?category=Yến Tinh Chế" class="text-decoration-none text-primary fw-bold">
                     Xem tất cả <i class="bi bi-arrow-right"></i>
                 </a>
             </div>
-        </section>
+        </div>
     </section>
+    @endif
 
+    <!-- Yến Chưng Sẵn -->
     <div class="container">
+        @if($yenChungSan->count() > 0)
         <section class="mb-5">
             <div class="category-title-wrapper">
                 <h2 class="category-title mb-0">Yến Chưng Sẵn</h2>
             </div>
             <div class="product-row">
-                @for($i=1;$i<=4;$i++)
+                @foreach($yenChungSan->take(4) as $product)
                 <div class="product-col">
                     <div class="product-block-card">
-                        <div class="product-block-image-wrapper">
-                            <img src="https://placehold.co/600x400/e8e8e8/333333?text=San+pham+Chung+San" class="product-block-image" alt="Sản phẩm Chưng Sẵn">
-                            <div class="product-block-cart-icon">
-                                <i class="bi bi-cart-plus text-white fs-4"></i>
-                            </div>
+                        <div class="product-block-image-wrapper" style="cursor: pointer;">
+                            <img src="{{ $product->image ? asset('storage/'.$product->image) : asset('images/products/product-1.jpg') }}" 
+                                 class="product-block-image" alt="{{ $product->name }}"
+                                 onclick="window.location.href='{{ url('/products/' . $product->id) }}'">
+                            @if($product->has_sale)
+                            <div class="product-block-discount" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">-{{ $product->discount_percent }}%</div>
+                            @endif
+                            <form action="{{ url('/cart/add/' . $product->id) }}" method="POST" class="add-to-cart-form d-inline" data-product-name="{{ $product->name }}">
+                                @csrf
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="product-block-cart-icon">
+                                    <i class="bi bi-cart-plus text-white fs-4"></i>
+                                </button>
+                            </form>
                         </div>
-                        <div class="product-block-body">
-                            <h5 class="product-block-title">Sản phẩm Chưng Sẵn #{{ $i }}</h5>
-                            <div class="product-block-price-section text-end">
-                                <div><span class="product-block-price-new">200,000₫</span></div>
+                        <div class="product-block-body" style="cursor: pointer;">
+                            <h5 class="product-block-title" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">{{ $product->name }}</h5>
+                            <div class="product-block-price-section text-end" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">
+                                @if($product->has_sale)
+                                <div>
+                                    <span class="product-block-price-old">{{ number_format($product->original_price ?? $product->price) }}₫</span>
+                                    <span class="product-block-price-new">{{ number_format($product->display_price) }}₫</span>
+                                </div>
+                                @else
+                                <div><span class="product-block-price-new">{{ number_format($product->price) }}₫</span></div>
+                                @endif
                                 <div class="mt-2">
-                                    @php $qty = rand(0, 50); @endphp
-                                    @if($qty > 0)
-                                        <span class="badge bg-success">Còn {{ $qty }} sản phẩm</span>
+                                    @if($product->quantity > 0)
+                                        <span class="badge bg-success">Còn {{ $product->quantity }} sản phẩm</span>
                                     @else
                                         <span class="badge bg-danger">Hết hàng</span>
                                     @endif
                                 </div>
                             </div>
-                            <a href="#" class="btn product-block-btn w-100">Đặt hàng ngay</a>
+                            <button class="btn product-block-btn w-100" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">Đặt hàng ngay</button>
                         </div>
                     </div>
                 </div>
-                @endfor
+                @endforeach
             </div>
             <div class="text-end mt-3">
-                <a href="/products?category=Yến+Chưng+Sẵn" class="text-decoration-none text-primary fw-bold">
+                <a href="/products?category=Yến Chưng Sẵn" class="text-decoration-none text-primary fw-bold">
                     Xem tất cả <i class="bi bi-arrow-right"></i>
                 </a>
             </div>
         </section>
+        @endif
     </div>
 
     <!-- Hot Banner Section -->
@@ -506,5 +538,90 @@
             </form>
         </div> -->
     </section>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle add to cart forms with AJAX
+        const cartForms = document.querySelectorAll('.add-to-cart-form');
+        
+        cartForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const formData = new FormData(this);
+                const productName = this.dataset.productName;
+                
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Show toast notification
+                        showToast('success', data.message || 'Đã thêm "' + productName + '" vào giỏ hàng');
+                        
+                        // Update cart count badge
+                        const cartBadge = document.getElementById('cart-count-badge');
+                        if (cartBadge) {
+                            cartBadge.textContent = data.cart_count;
+                            if (data.cart_count > 0) {
+                                cartBadge.classList.remove('d-none');
+                            }
+                        }
+                        
+                        // Update cart dropdown HTML
+                        const cartDropdown = document.getElementById('cart-dropdown');
+                        if (cartDropdown && data.cart_html) {
+                            cartDropdown.innerHTML = data.cart_html;
+                        }
+                    } else {
+                        showToast('error', data.message || 'Có lỗi xảy ra');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('error', 'Không thể thêm vào giỏ hàng');
+                });
+            });
+        });
+        
+        // Toast notification function
+        function showToast(type, message) {
+            const toastContainer = document.querySelector('.toast-container');
+            if (!toastContainer) return;
+            
+            const toastId = 'toast-' + Date.now();
+            const bgClass = type === 'success' ? 'bg-success' : 'bg-danger';
+            const icon = type === 'success' ? 'bi-check-circle' : 'bi-x-circle';
+            
+            const toastHtml = `
+                <div id="${toastId}" class="toast align-items-center text-white ${bgClass} border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="bi ${icon} me-2"></i>${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+            
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+            
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+            
+            // Remove toast after it's hidden
+            toastElement.addEventListener('hidden.bs.toast', function() {
+                this.remove();
+            });
+        }
+    });
+    </script>
 
 @endsection

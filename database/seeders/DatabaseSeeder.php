@@ -20,6 +20,15 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
         ]);
 
+        // Create admin user if not exists
+        if (!User::where('email', 'admin@yensaohd.vn')->exists()) {
+            User::factory()->create([
+                'name' => 'Admin',
+                'email' => 'admin@yensaohd.vn',
+                'password' => bcrypt('admin123'),
+            ]);
+        }
+
         // Create test user if not exists
         if (!User::where('email', 'test@example.com')->exists()) {
             User::factory()->create([

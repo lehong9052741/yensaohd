@@ -1,0 +1,159 @@
+/* Footer Styles */
+footer {
+    background-color: #FFF9F0;
+    border-top: 3px solid #FFB300;
+}
+
+footer h6 {
+    color: #6B4423;
+    font-size: 1.1rem;
+}
+
+.footer-links {
+    line-height: 2;
+}
+
+.footer-links a {
+    color: #555;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.footer-links a:hover {
+    color: #FFB300;
+    padding-left: 5px;
+}
+
+.footer-links i.bi-chevron-right {
+    font-size: 0.75rem;
+    color: #FFB300;
+}
+
+/* Floating Contact Buttons */
+.floating-contact {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.floating-btn {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    animation: pulse 2s infinite;
+}
+
+.floating-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    animation: none;
+}
+
+.fb-btn {
+    background: linear-gradient(135deg, #1877F2, #4267B2);
+}
+
+.fb-btn i {
+    color: white;
+    font-size: 28px;
+}
+
+.zalo-btn {
+    background: linear-gradient(135deg, #0068FF, #0180C7);
+    padding: 12px;
+}
+
+.phone-btn {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+}
+
+.phone-btn i {
+    color: white;
+    font-size: 24px;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Back to Top Button */
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 20px;
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, #FFB300, #F5B041);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.back-to-top.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.back-to-top:hover {
+    background: linear-gradient(135deg, #F5B041, #FFB300);
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.back-to-top i {
+    font-size: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .floating-contact {
+        right: 15px;
+        bottom: 80px;
+    }
+    
+    .floating-btn {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .back-to-top {
+        right: 15px;
+        bottom: 20px;
+        width: 40px;
+        height: 40px;
+    }
+    
+    footer h6 {
+        font-size: 1rem;
+    }
+    
+    .footer-links {
+        font-size: 0.9rem;
+    }
+}

@@ -133,48 +133,6 @@
         </div>
     </div>
 
-    <!-- <nav class="navbar navbar-expand-lg border-bottom" style="background-color:#ffffff;">
-        <div class="container">
-            <div class="d-flex align-items-center gap-2">
-                <div class="dropdown">
-                    <button class="btn btn-outline-secondary d-flex align-items-center" id="categoriesBtn" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="material-icons">menu</span>
-                        <span class="ms-2">Danh mục sản phẩm</span>
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="categoriesBtn">
-                        <li><a class="dropdown-item" href="/products?category=Yến+Thô">Yến Thô</a></li>
-                        <li><a class="dropdown-item" href="/products?category=Yến+Tinh+Chế">Yến Tinh Chế</a></li>
-                        <li><a class="dropdown-item" href="/products?category=Yến+Chưng+Sẵn">Yến Chưng Sẵn</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/products">Tất cả sản phẩm</a></li>
-                    </ul>
-                </div>
-
-                <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavRow">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </div>
-
-            <div class="collapse navbar-collapse" id="mainNavRow">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="/">Trang Chủ</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navProducts" data-bs-toggle="dropdown">Sản Phẩm</a>
-                        <ul class="dropdown-menu" aria-labelledby="navProducts">
-                            <li><a class="dropdown-item" href="/products?category=Yến+Thô">Yến Thô</a></li>
-                            <li><a class="dropdown-item" href="/products?category=Yến+Tinh+Chế">Yến Tinh Chế</a></li>
-                            <li><a class="dropdown-item" href="/products?category=Yến+Chưng+Sẵn">Yến Chưng Sẵn</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item"><a class="nav-link" href="/promotions">Khuyến Mãi</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/news">Tin Tức</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/about">Giới Thiệu</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/contact">Liên Hệ</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav> -->
-
     <nav class="navbar navbar-expand-lg border-bottom header-nav">
     <div class="container">
       <div class="d-flex align-items-center gap-2">
@@ -206,15 +164,19 @@
       <div class="collapse navbar-collapse" id="mainNavRow">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
           <li class="nav-item"><a class="nav-link" href="/">Trang Chủ</a></li>
-          <li class="nav-item dropdown">
+          <!-- <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navProducts" data-bs-toggle="dropdown">Sản Phẩm</a>
             <ul class="dropdown-menu p-0 shadow border-0 header-product-dropdown" aria-labelledby="navProducts">
               <li><a class="menu-item" href="/products?category=Yến+Thô"><i class="bi bi-egg"></i><span>Yến Thô</span></a></li>
               <li><a class="menu-item" href="/products?category=Yến+Tinh+Chế"><i class="bi bi-droplet"></i><span>Yến Tinh Chế</span></i></a></li>
               <li><a class="menu-item" href="/products?category=Yến+Chưng+Sẵn"><i class="bi bi-jar"></i><span>Yến Chưng Sẵn</span></a></li>
             </ul>
+          </li> -->
+          <li class="nav-item">
+            <a class="nav-link promotion-link" href="/promotions">
+              <i class="bi bi-fire text-danger me-1"></i>Khuyến Mãi
+            </a>
           </li>
-          <li class="nav-item"><a class="nav-link" href="/promotions">Khuyến Mãi</a></li>
           <li class="nav-item"><a class="nav-link" href="/news">Tin Tức</a></li>
           <li class="nav-item"><a class="nav-link" href="/about">Giới Thiệu</a></li>
           <li class="nav-item"><a class="nav-link" href="/contact">Liên Hệ</a></li>

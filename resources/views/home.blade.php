@@ -97,19 +97,73 @@
         </div>
     </section>
 
+    <!-- Info Block with Carousel -->
+    <section class="mb-5 py-5 info-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <!-- Column 1: Info -->
+                <div class="col-md-5">
+                    <div class="info-content text-center text-md-start">
+                        <div class="text-center mb-4">
+                            <img src="{{ asset('images/banners/trang-tri-yen-sao.png') }}" alt="Trang trí" class="info-decoration-icon">
+                        </div>
+                        <h2 class="info-title fw-bold mb-3">Yến Sào Hoàng Đăng</h2>
+                        <div class="info-description text-start mb-4">
+                            <p class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Yến sào thiên nhiên 100% từ đảo Hòn Nội</p>
+                            <p class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Quy trình sản xuất khép kín, đảm bảo vệ sinh an toàn thực phẩm</p>
+                            <p class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Giá cả hợp lý, chất lượng vượt trội</p>
+                            <p class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Giao hàng nhanh chóng, bảo hành đổi trả 7 ngày</p>
+                            <p class="mb-0"><i class="bi bi-check-circle-fill text-success me-2"></i>Đội ngũ tư vấn chuyên nghiệp, nhiệt tình</p>
+                        </div>
+                        <div class="text-center">
+                            <a href="/products" class="btn btn-primary btn-lg fw-bold info-view-all-btn">
+                                <i class="bi bi-eye me-2"></i>Xem tất cả sản phẩm
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Column 2: Carousel -->
+                <div class="col-md-7">
+                    <div id="infoCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+                        <div class="carousel-indicators info-carousel-indicators">
+                            <button type="button" data-bs-target="#infoCarousel" data-bs-slide-to="0" class="active" aria-current="true"></button>
+                            <button type="button" data-bs-target="#infoCarousel" data-bs-slide-to="1"></button>
+                            <button type="button" data-bs-target="#infoCarousel" data-bs-slide-to="2"></button>
+                            <button type="button" data-bs-target="#infoCarousel" data-bs-slide-to="3"></button>
+                        </div>
+                        <div class="carousel-inner rounded-3 shadow">
+                            <div class="carousel-item active">
+                                <img src="{{ asset('images/banners/hop-to-yen-nha-tinh-che-100g-1.jpg') }}" class="d-block w-100 info-carousel-image" alt="Slide 1">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="{{ asset('images/banners/hop-to-yen-nha-tinh-che-100g-1.jpg') }}" class="d-block w-100 info-carousel-image" alt="Slide 2">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="{{ asset('images/banners/hop-to-yen-nha-tinh-che-100g-1.jpg') }}" class="d-block w-100 info-carousel-image" alt="Slide 3">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="{{ asset('images/banners/hop-to-yen-nha-tinh-che-100g-1.jpg') }}" class="d-block w-100 info-carousel-image" alt="Slide 4">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Product Blocks -->
     <div class="container">
         <section class="mb-5">
             <div class="category-title-wrapper">
                 <h2 class="category-title mb-0">Yến Thô Tự Nhiên</h2>
             </div>
-            <p class="text-muted mb-4 text-start">Tổ yến nguyên chất, giữ trọn dưỡng chất tự nhiên.</p>
             <div class="product-row">
                 @for($i=1;$i<=4;$i++)
                 <div class="product-col">
                     <div class="product-block-card">
                         <div class="product-block-image-wrapper">
-                            <img src="https://placehold.co/600x400/e8e8e8/333333?text=San+pham+Tho" class="product-block-image" alt="Sản phẩm Thô">
+                            <img src="{{ asset('images/products/product-1.jpg') }}" class="product-block-image" alt="Sản phẩm Thô">
                             @if($i % 2 == 0)
                             <div class="product-block-discount">-20%</div>
                             @endif
@@ -119,13 +173,23 @@
                         </div>
                         <div class="product-block-body">
                             <h5 class="product-block-title">Sản phẩm Thô #{{ $i }}</h5>
-                            <div class="product-block-price-section">
+                            <div class="product-block-price-section text-end">
                                 @if($i % 2 == 0)
-                                <span class="product-block-price-old">1,000,000₫</span>
-                                <span class="product-block-price-new">800,000₫</span>
+                                <div>
+                                    <span class="product-block-price-old">1,000,000₫</span>
+                                    <span class="product-block-price-new">800,000₫</span>
+                                </div>
                                 @else
-                                <span class="product-block-price-new">1,000,000₫</span>
+                                <div><span class="product-block-price-new">1,000,000₫</span></div>
                                 @endif
+                                <div class="mt-2">
+                                    @php $qty = rand(0, 50); @endphp
+                                    @if($qty > 0)
+                                        <span class="badge bg-success">Còn {{ $qty }} sản phẩm</span>
+                                    @else
+                                        <span class="badge bg-danger">Hết hàng</span>
+                                    @endif
+                                </div>
                             </div>
                             <a href="#" class="btn product-block-btn w-100">Đặt hàng ngay</a>
                         </div>
@@ -133,15 +197,19 @@
                 </div>
                 @endfor
             </div>
+            <div class="text-end mt-3">
+                <a href="/products?category=Yến+Thô" class="text-decoration-none text-primary fw-bold">
+                    Xem tất cả <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
         </section>
     </div>
 
-    <section class="mb-5 py-4" style="background-color:#FFF4C1">
+    <section class="mb-5 py-4">
         <div class="container">
             <div class="category-title-wrapper">
                 <h2 class="category-title mb-0">Yến Tinh Chế</h2>
             </div>
-            <p class="text-muted mb-4 text-start">Tinh chọn từng sợi yến, sạch lông, sẵn sàng cho bữa bổ dưỡng.</p>
             <div class="product-row">
                 @for($i=1;$i<=4;$i++)
                 <div class="product-col">
@@ -157,19 +225,34 @@
                         </div>
                         <div class="product-block-body">
                             <h5 class="product-block-title">Sản phẩm Tinh Chế #{{ $i }}</h5>
-                            <div class="product-block-price-section">
+                            <div class="product-block-price-section text-end">
                                 @if($i % 3 == 0)
-                                <span class="product-block-price-old">1,500,000₫</span>
-                                <span class="product-block-price-new">1,275,000₫</span>
+                                <div>
+                                    <span class="product-block-price-old">1,500,000₫</span>
+                                    <span class="product-block-price-new">1,275,000₫</span>
+                                </div>
                                 @else
-                                <span class="product-block-price-new">1,500,000₫</span>
+                                <div><span class="product-block-price-new">1,500,000₫</span></div>
                                 @endif
+                                <div class="mt-2">
+                                    @php $qty = rand(0, 50); @endphp
+                                    @if($qty > 0)
+                                        <span class="badge bg-success">Còn {{ $qty }} sản phẩm</span>
+                                    @else
+                                        <span class="badge bg-danger">Hết hàng</span>
+                                    @endif
+                                </div>
                             </div>
                             <a href="#" class="btn product-block-btn w-100">Đặt hàng ngay</a>
                         </div>
                     </div>
                 </div>
                 @endfor
+            </div>
+            <div class="text-end mt-3">
+                <a href="/products?category=Yến+Tinh+Chế" class="text-decoration-none text-primary fw-bold">
+                    Xem tất cả <i class="bi bi-arrow-right"></i>
+                </a>
             </div>
         </section>
     </section>
@@ -179,7 +262,6 @@
             <div class="category-title-wrapper">
                 <h2 class="category-title mb-0">Yến Chưng Sẵn</h2>
             </div>
-            <p class="text-muted mb-4 text-start">Yến chưng sẵn tiện lợi – bổ dưỡng mỗi ngày.</p>
             <div class="product-row">
                 @for($i=1;$i<=4;$i++)
                 <div class="product-col">
@@ -192,8 +274,16 @@
                         </div>
                         <div class="product-block-body">
                             <h5 class="product-block-title">Sản phẩm Chưng Sẵn #{{ $i }}</h5>
-                            <div class="product-block-price-section">
-                                <span class="product-block-price-new">200,000₫</span>
+                            <div class="product-block-price-section text-end">
+                                <div><span class="product-block-price-new">200,000₫</span></div>
+                                <div class="mt-2">
+                                    @php $qty = rand(0, 50); @endphp
+                                    @if($qty > 0)
+                                        <span class="badge bg-success">Còn {{ $qty }} sản phẩm</span>
+                                    @else
+                                        <span class="badge bg-danger">Hết hàng</span>
+                                    @endif
+                                </div>
                             </div>
                             <a href="#" class="btn product-block-btn w-100">Đặt hàng ngay</a>
                         </div>
@@ -201,20 +291,203 @@
                 </div>
                 @endfor
             </div>
+            <div class="text-end mt-3">
+                <a href="/products?category=Yến+Chưng+Sẵn" class="text-decoration-none text-primary fw-bold">
+                    Xem tất cả <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
         </section>
     </div>
 
-    <!-- Customer reviews & contact form (placeholder) -->
-    <div class="container">
-        <section class="mb-5 row">
-            <div class="col-md-7">
-            <h4>Ý kiến khách hàng</h4>
-            <div class="bg-light p-3">
-                <p><strong>Nguyễn A:</strong> Sản phẩm rất tốt, đóng gói kỹ.</p>
-                <p><strong>Trần B:</strong> Dịch vụ nhanh, nhân viên thân thiện.</p>
+    <!-- Hot Banner Section -->
+    <section class="mb-5">
+        <div class="container">
+            <div class="hot-banner-wrapper">
+                <img src="{{ asset('images/banners/section_hot_banner.png') }}" class="w-100 rounded shadow-sm" alt="Hot Banner">
             </div>
         </div>
-        <div class="col-md-5">
+    </section>
+
+    <!-- Customer Reviews Carousel -->
+    <div class="container">
+        <section class="mb-5">
+            <h4 class="text-center mb-4 fw-bold">Ý Kiến Khách Hàng</h4>
+            <div id="customerReviewsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#customerReviewsCarousel" data-bs-slide-to="0" class="active" aria-current="true"></button>
+                    <button type="button" data-bs-target="#customerReviewsCarousel" data-bs-slide-to="1"></button>
+                </div>
+                <div class="carousel-inner">
+                    <!-- Slide 1: First 3 reviews -->
+                    <div class="carousel-item active">
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <div class="review-card text-center p-4 h-100">
+                                    <div class="customer-avatar mx-auto mb-3">
+                                        <img src="{{ asset('images/customers/customer1.jpg') }}" alt="Nguyễn Văn A" class="rounded-circle">
+                                    </div>
+                                    <h5 class="customer-name fw-bold mb-2">Nguyễn Văn A</h5>
+                                    <div class="rating mb-3">
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    </div>
+                                    <p class="review-text text-muted fst-italic">
+                                        "Sản phẩm rất tốt, đóng gói kỹ lưỡng. Chất lượng yến sào tuyệt vời, gia đình tôi rất hài lòng. Sẽ tiếp tục ủng hộ!"
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="review-card text-center p-4 h-100">
+                                    <div class="customer-avatar mx-auto mb-3">
+                                        <img src="{{ asset('images/customers/customer2.jpg') }}" alt="Trần Thị B" class="rounded-circle">
+                                    </div>
+                                    <h5 class="customer-name fw-bold mb-2">Trần Thị B</h5>
+                                    <div class="rating mb-3">
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star text-warning"></i>
+                                    </div>
+                                    <p class="review-text text-muted fst-italic">
+                                        "Dịch vụ nhanh chóng, nhân viên tư vấn nhiệt tình. Giá cả hợp lý, chất lượng tốt. Rất đáng để mua!"
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="review-card text-center p-4 h-100">
+                                    <div class="customer-avatar mx-auto mb-3">
+                                        <img src="{{ asset('images/customers/customer3.jpg') }}" alt="Lê Minh C" class="rounded-circle">
+                                    </div>
+                                    <h5 class="customer-name fw-bold mb-2">Lê Minh C</h5>
+                                    <div class="rating mb-3">
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    </div>
+                                    <p class="review-text text-muted fst-italic">
+                                        "Yến sào chất lượng cao, nguồn gốc rõ ràng. Đã mua nhiều lần và luôn hài lòng. Cảm ơn shop!"
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Slide 2: Next 3 reviews -->
+                    <div class="carousel-item">
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <div class="review-card text-center p-4 h-100">
+                                    <div class="customer-avatar mx-auto mb-3">
+                                        <img src="{{ asset('images/customers/customer1.jpg') }}" alt="Phạm Văn D" class="rounded-circle">
+                                    </div>
+                                    <h5 class="customer-name fw-bold mb-2">Phạm Văn D</h5>
+                                    <div class="rating mb-3">
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    </div>
+                                    <p class="review-text text-muted fst-italic">
+                                        "Shop giao hàng đúng hẹn, sản phẩm chất lượng. Rất hài lòng với dịch vụ!"
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="review-card text-center p-4 h-100">
+                                    <div class="customer-avatar mx-auto mb-3">
+                                        <img src="{{ asset('images/customers/customer2.jpg') }}" alt="Hoàng Thị E" class="rounded-circle">
+                                    </div>
+                                    <h5 class="customer-name fw-bold mb-2">Hoàng Thị E</h5>
+                                    <div class="rating mb-3">
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star text-warning"></i>
+                                    </div>
+                                    <p class="review-text text-muted fst-italic">
+                                        "Yến sào ngon, bổ dưỡng. Gia đình tôi dùng rất thích. Sẽ giới thiệu cho bạn bè!"
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="review-card text-center p-4 h-100">
+                                    <div class="customer-avatar mx-auto mb-3">
+                                        <img src="{{ asset('images/customers/customer3.jpg') }}" alt="Vũ Minh F" class="rounded-circle">
+                                    </div>
+                                    <h5 class="customer-name fw-bold mb-2">Vũ Minh F</h5>
+                                    <div class="rating mb-3">
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    </div>
+                                    <p class="review-text text-muted fst-italic">
+                                        "Chất lượng tuyệt vời, giá cả phải chăng. Rất đáng để thử!"
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#customerReviewsCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#customerReviewsCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Brand Story Section -->
+    <div class="container">
+        <section class="mb-5 py-5 brand-story-section">
+            <div class="row align-items-center">
+                <!-- Left: Image -->
+                <div class="col-md-4">
+                    <div class="brand-story-image-wrapper">
+                        <img src="{{ asset('images/products/nestbird.png') }}" alt="Nest Bird" class="img-transform">
+                    </div>
+                </div>
+                
+                <!-- Right: Content -->
+                <div class="col-md-8">
+                    <div class="brand-story-content">
+                        <h2 class="brand-story-title text-center mb-4">
+                            Yến sào dễ kiếm – An tâm khó tìm<br>
+                            Thương hiệu có tâm – Mua sắm xứng tâm
+                        </h2>
+                        <div class="brand-story-text">
+                            <p>
+                                Trở thành một trong những công ty hàng đầu cung cấp các sản phẩm dinh dưỡng đến từ Yến sào: có uy tín, thương hiệu trong lĩnh vực Yến sào.
+                            </p>
+                            <p>
+                                Là thương hiệu Việt Nam chấp cánh đưa nông sản Việt Nam nổi chung và Yến sào Việt Nam nổi riêng có tên trên bản đồ nông sản thế giới, sánh ngang với các thương hiệu nông sản nổi tiếng của các cường quốc nông nghiệp trên thế giới.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Contact Form -->
+    <!-- <div class="container">
+        <section class="mb-5 row">
+        <div class="col-md-12">
             <h4>Form tư vấn</h4>
             <form>
                 <div class="mb-2">
@@ -231,7 +504,7 @@
                 </div>
                 <button class="btn" style="background-color:#F5B041;color:#000">Gửi tư vấn</button>
             </form>
-        </div>
+        </div> -->
     </section>
 
 @endsection

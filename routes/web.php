@@ -18,6 +18,8 @@ Route::post('/cart/add/{product}', [CartController::class, 'add']);
 Route::post('/cart/remove/{id}', [CartController::class, 'remove']);
 Route::post('/cart/clear', [CartController::class, 'clear']);
 Route::post('/cart/update/{id}', [CartController::class, 'update']);
+Route::get('/checkout', [CartController::class, 'checkout']);
+Route::post('/checkout', [CartController::class, 'processCheckout']);
 
 // Admin routes (protected)
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {

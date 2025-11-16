@@ -24,13 +24,21 @@ class CartController extends Controller
             $cart[$product->id] = [
                 'id' => $product->id,
                 'name' => $product->name,
-                'price' => $product->price,
+                'price' => $product->display_price,
                 'quantity' => $qty,
                 'image' => $product->image,
             ];
         }
 
         session()->put('cart', $cart);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã thêm "' . $product->name . '" vào giỏ hàng',
+                'cart_count' => count($cart)
+            ]);
+        }
 
         return redirect()->back()->with('cart_success', 'Đã thêm "' . $product->name . '" vào giỏ hàng');
     }
@@ -68,5 +76,40 @@ class CartController extends Controller
     {
         session()->forget('cart');
         return redirect('/cart');
+    }
+
+    public function checkout()
+    {
+        $cart = session()->get('cart', []);
+        
+        if (empty($cart)) {
+            return redirect('/cart')->with('error', 'Giỏ hàng của bạn đang trống');
+        }
+
+        $total = 0;
+        foreach ($cart as $item) {
+            $total += $item['price'] * $item['quantity'];
+        }
+
+        return view('checkout', compact('cart', 'total'));
+    }
+
+    public function processCheckout(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'email' => 'nullable|email',
+            'city' => 'required|string',
+            'district' => 'required|string',
+            'ward' => 'required|string',
+            'address' => 'required|string',
+        ]);
+
+        // TODO: Process order, save to database, send email, etc.
+
+        session()->forget('cart');
+        
+        return redirect('/')->with('success', 'Đặt hàng thành công! Chúng tôi sẽ liên hệ với bạn sớm nhất.');
     }
 }

@@ -35,38 +35,47 @@
         </div>
         <hr class="mb-4 mx-0 best-seller-divider">
         <div class="container">
-            <div id="bestSellerCarousel" class="carousel slide position-relative best-seller-carousel" data-bs-ride="carousel" data-bs-interval="4000">
+            <div id="bestSellerCarousel" class="carousel slide position-relative best-seller-carousel" data-bs-ride="carousel" data-bs-interval="4000" style="padding: 0 50px;">
+                <!-- Carousel Indicators -->
+                <div class="carousel-indicators">
+                    @foreach($bestSellers->chunk(4) as $index => $chunk)
+                    <button type="button" data-bs-target="#bestSellerCarousel" data-bs-slide-to="{{ $index }}" class="{{ $index == 0 ? 'active' : '' }}" aria-current="{{ $index == 0 ? 'true' : 'false' }}"></button>
+                    @endforeach
+                </div>
+
                 <div class="carousel-inner">
-                    @foreach($bestSellers->chunk(5) as $index => $chunk)
+                    @foreach($bestSellers->chunk(4) as $index => $chunk)
                     <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
-                        <div class="row row-cols-2 row-cols-md-5 g-3">
-                            @foreach($chunk as $key => $product)
-                            <div class="col">
+                        <div class="d-flex justify-content-center gap-3">
+                            @foreach($chunk as $product)
+                            <div style="width: 48%; min-width: 160px;">
                                 <a href="{{ url('/products/' . $product->id) }}" class="text-decoration-none">
-                                    <div class="card h-100 shadow-sm position-relative product-card">
-                                        @if($product->has_sale)
-                                        <div class="product-block-discount">-{{ $product->discount_percent }}%</div>
-                                        @endif
-                                        <img src="{{ $product->image ? asset('storage/'.$product->image) : asset('images/products/product-1.jpg') }}" 
-                                             class="card-img-top product-image" alt="{{ $product->name }}">
+                                    <div class="card h-100 shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
+                                        <div style="position: relative; overflow: hidden;">
+                                            <img src="{{ $product->image ? asset('storage/'.$product->image) : asset('images/products/product-1.jpg') }}" 
+                                                 class="card-img-top" 
+                                                 style="height: 200px; object-fit: cover; cursor: pointer; transition: transform 0.3s ease;"
+                                                 onmouseover="this.style.transform='scale(1.1)'"
+                                                 onmouseout="this.style.transform='scale(1)'"
+                                                 alt="{{ $product->name }}">
+                                            @if($product->has_sale)
+                                            <div style="position: absolute; top: 8px; right: 8px; background-color: #dc3545; color: white; padding: 4px 8px; border-radius: 5px; font-weight: bold; font-size: 0.75rem; z-index: 5;">
+                                                -{{ $product->discount_percent }}%
+                                            </div>
+                                            @endif
+                                        </div>
                                         <div class="card-body p-3">
-                                            <h6 class="product-title-seller text-truncate mb-3 fw-bold text-start text-dark product-title">{{ $product->name }}</h6>
-                                            <div class="price-section d-flex justify-content-between align-items-center mb-2">
+                                            <h6 class="card-title mb-2" style="font-size: 0.9rem; line-height: 1.3; height: 2.6rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{ $product->name }}</h6>
+                                            <div class="text-end">
                                                 @if($product->has_sale)
-                                                <p class="text-muted text-decoration-line-through mb-0 product-price-old">
-                                                    {{ number_format($product->original_price ?? $product->price) }}₫
-                                                </p>
-                                                <p class="text-danger fw-bold mb-0 product-price-new">
-                                                    {{ number_format($product->sale_price) }}₫
-                                                </p>
+                                                <small class="text-muted text-decoration-line-through d-block" style="font-size: 0.75rem;">{{ number_format($product->original_price ?? $product->price) }}₫</small>
+                                                <p class="text-danger fw-bold mb-0" style="font-size: 0.95rem;">{{ number_format($product->sale_price) }}₫</p>
                                                 @else
-                                                <p class="text-dark fw-bold mb-0 ms-auto product-price-new">
-                                                    {{ number_format($product->price) }}₫
-                                                </p>
+                                                <p class="text-dark fw-bold mb-0" style="font-size: 0.95rem;">{{ number_format($product->price) }}₫</p>
                                                 @endif
                                             </div>
-                                            <div class="text-end">
-                                                <small class="text-muted fst-italic product-sold-count">Đã bán: {{ $product->sold_count }}</small>
+                                            <div class="text-end mt-2">
+                                                <small class="text-muted fst-italic" style="font-size: 0.75rem;">Đã bán: {{ $product->sold_count }}</small>
                                             </div>
                                         </div>
                                     </div>
@@ -77,16 +86,16 @@
                     </div>
                     @endforeach
                 </div>
-                @if($bestSellers->count() > 5)
-                <button class="carousel-control-prev carousel-control-custom-prev" type="button" data-bs-target="#bestSellerCarousel" data-bs-slide="prev">
-                    <span class="d-flex align-items-center justify-content-center rounded-circle carousel-control-icon" aria-hidden="true">
-                        <i class="bi bi-chevron-left text-white fs-4"></i>
+                @if($bestSellers->count() > 4)
+                <button class="carousel-control-prev" type="button" data-bs-target="#bestSellerCarousel" data-bs-slide="prev" style="left: 5px; width: auto;">
+                    <span class="d-flex align-items-center justify-content-center rounded-circle" style="background-color: rgba(200, 200, 200, 0.8); width: 35px; height: 35px;" aria-hidden="true">
+                        <i class="bi bi-chevron-left text-white fs-5"></i>
                     </span>
                     <span class="visually-hidden">Previous</span>
                 </button>
-                <button class="carousel-control-next carousel-control-custom-next" type="button" data-bs-target="#bestSellerCarousel" data-bs-slide="next">
-                    <span class="d-flex align-items-center justify-content-center rounded-circle carousel-control-icon" aria-hidden="true">
-                        <i class="bi bi-chevron-right text-white fs-4"></i>
+                <button class="carousel-control-next" type="button" data-bs-target="#bestSellerCarousel" data-bs-slide="next" style="right: 5px; width: auto;">
+                    <span class="d-flex align-items-center justify-content-center rounded-circle" style="background-color: rgba(200, 200, 200, 0.8); width: 35px; height: 35px;" aria-hidden="true">
+                        <i class="bi bi-chevron-right text-white fs-5"></i>
                     </span>
                     <span class="visually-hidden">Next</span>
                 </button>

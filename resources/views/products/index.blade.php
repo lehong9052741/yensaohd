@@ -93,9 +93,9 @@
         <h3 class="category-title mb-0">Sản Phẩm Liên Quan</h3>
     </div>
     
-    <div id="relatedProductsCarousel" class="carousel slide mt-4 position-relative" data-bs-ride="carousel" data-bs-interval="3000" style="padding: 0 40px;">
+    <div id="relatedProductsCarousel" class="carousel slide mt-4 position-relative" data-bs-ride="carousel" data-bs-interval="3000" style="padding: 0 50px;">
         <div class="carousel-inner">
-            @foreach($relatedProducts->chunk(5) as $index => $chunk)
+            @foreach($relatedProducts->chunk(2) as $index => $chunk)
             <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
                 <div class="d-flex justify-content-center gap-3">
                     @foreach($chunk as $product)
@@ -134,15 +134,15 @@
             @endforeach
         </div>
         
-        @if($relatedProducts->count() > 5)
-        <button class="carousel-control-prev" type="button" data-bs-target="#relatedProductsCarousel" data-bs-slide="prev" style="left: -30px; width: auto;">
-            <span class="d-flex align-items-center justify-content-center rounded-circle" style="background-color: #dc3545; width: 40px; height: 40px; border: 2px solid #fff;" aria-hidden="true">
+        @if($relatedProducts->count() > 2)
+        <button class="carousel-control-prev" type="button" data-bs-target="#relatedProductsCarousel" data-bs-slide="prev" style="left: 5px; width: auto;">
+            <span class="d-flex align-items-center justify-content-center rounded-circle" style="background-color: rgba(200, 200, 200, 0.8); width: 35px; height: 35px;" aria-hidden="true">
                 <i class="bi bi-chevron-left text-white fs-5"></i>
             </span>
             <span class="visually-hidden">Previous</span>
         </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#relatedProductsCarousel" data-bs-slide="next" style="right: -30px; width: auto;">
-            <span class="d-flex align-items-center justify-content-center rounded-circle" style="background-color: #dc3545; width: 40px; height: 40px; border: 2px solid #fff;" aria-hidden="true">
+        <button class="carousel-control-next" type="button" data-bs-target="#relatedProductsCarousel" data-bs-slide="next" style="right: 5px; width: auto;">
+            <span class="d-flex align-items-center justify-content-center rounded-circle" style="background-color: rgba(200, 200, 200, 0.8); width: 35px; height: 35px;" aria-hidden="true">
                 <i class="bi bi-chevron-right text-white fs-5"></i>
             </span>
             <span class="visually-hidden">Next</span>

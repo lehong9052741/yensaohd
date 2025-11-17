@@ -9,7 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/css/footer.css', 'resources/js/footer.js', 'resources/css/product-detail.css', 'resources/css/checkout.css'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/css/footer.css', 'resources/js/footer.js', 'resources/css/product-detail.css', 'resources/css/checkout.css', 'resources/css/responsive.css'])
 </head>
 <body>
     @include('partials.header')

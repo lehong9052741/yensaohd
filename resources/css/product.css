@@ -114,6 +114,28 @@
     margin-left: 1rem;
 }
 
+.category-title-wrapper-product {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.category-title-wrapper-product::before {
+    content: '';
+    width: 50px;
+    height: 4px;
+    background: linear-gradient(to right, #ffc107, transparent);
+    margin-right: 1rem;
+}
+
+.category-title-wrapper-product::after {
+    content: '';
+    flex: 1;
+    height: 4px;
+    background: linear-gradient(to right, transparent, #ffc107);
+    margin-left: 1rem;
+}
+
 .category-title {
     font-weight: 800;
     color: #936f03;

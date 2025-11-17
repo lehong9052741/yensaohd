@@ -41,14 +41,25 @@ class ProductController extends Controller
         }
         
         // Filter by category
+        $currentCategory = null;
         if ($request->has('category') && $request->category) {
-            $query->where('category', $request->category);
+            $currentCategory = $request->category;
+            $query->where('category', $currentCategory);
         }
         
         $products = $query->paginate(12);
         $searchKeyword = $request->search ?? '';
         
-        return view('products.index', compact('products', 'searchKeyword'));
+        // Get related products from other categories
+        $relatedProducts = collect();
+        if ($currentCategory) {
+            $relatedProducts = Product::where('category', '!=', $currentCategory)
+                ->inRandomOrder()
+                ->take(8)
+                ->get();
+        }
+        
+        return view('products.index', compact('products', 'searchKeyword', 'relatedProducts'));
     }
 
     /** Display products on promotion/sale */

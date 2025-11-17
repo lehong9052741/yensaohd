@@ -4,15 +4,17 @@
 <div class="container my-5 product-padding">
     <!-- Page Header -->
     <div class="mb-4">
-        <h2 class="fw-bold mb-3">
-            @if(request('search'))
-                Kết quả tìm kiếm: "{{ request('search') }}"
-            @elseif(request('category'))
-                {{ request('category') }}
-            @else
-                Tất cả sản phẩm
-            @endif
-        </h2>
+        <div class="category-title-wrapper-product">
+            <h2 class="category-title mb-0">
+                @if(request('search'))
+                    Kết quả tìm kiếm: "{{ request('search') }}"
+                @elseif(request('category'))
+                    {{ request('category') }}
+                @else
+                    Tất cả sản phẩm
+                @endif
+            </h2>
+        </div>
         
         <!-- Search Bar -->
         <div class="row mb-4">
@@ -83,6 +85,72 @@
         </div>
     @endif
 </div>
+
+<!-- Related Products Section -->
+@if(isset($relatedProducts) && $relatedProducts->count() > 0)
+<div class="container my-5">
+    <div class="category-title-wrapper-product">
+        <h3 class="category-title mb-0">Sản Phẩm Liên Quan</h3>
+    </div>
+    
+    <div id="relatedProductsCarousel" class="carousel slide mt-4 position-relative" data-bs-ride="carousel" data-bs-interval="3000" style="padding: 0 40px;">
+        <div class="carousel-inner">
+            @foreach($relatedProducts->chunk(5) as $index => $chunk)
+            <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
+                <div class="d-flex justify-content-center gap-3">
+                    @foreach($chunk as $product)
+                    <div style="width: 18%; min-width: 160px;">
+                        <div class="card h-100 shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
+                            <div style="position: relative; overflow: hidden;">
+                                <img src="{{ $product->image ? asset('storage/'.$product->image) : asset('images/products/product-1.jpg') }}" 
+                                     class="card-img-top" 
+                                     style="height: 180px; object-fit: cover; cursor: pointer; transition: transform 0.3s ease;"
+                                     onmouseover="this.style.transform='scale(1.1)'"
+                                     onmouseout="this.style.transform='scale(1)'"
+                                     onclick="window.location.href='{{ url('/products/' . $product->id) }}'"
+                                     alt="{{ $product->name }}">
+                                @if($product->has_sale)
+                                <div style="position: absolute; top: 8px; right: 8px; background-color: #dc3545; color: white; padding: 4px 8px; border-radius: 5px; font-weight: bold; font-size: 0.75rem; z-index: 5;">
+                                    -{{ $product->discount_percent }}%
+                                </div>
+                                @endif
+                            </div>
+                            <div class="card-body p-2" style="cursor: pointer;" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">
+                                <h6 class="card-title mb-2" style="font-size: 0.85rem; line-height: 1.3; height: 2.6rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{ $product->name }}</h6>
+                                <div class="text-end">
+                                    @if($product->has_sale)
+                                    <small class="text-muted text-decoration-line-through d-block" style="font-size: 0.75rem;">{{ number_format($product->price) }}₫</small>
+                                    <p class="text-danger fw-bold mb-0" style="font-size: 0.95rem;">{{ number_format($product->display_price) }}₫</p>
+                                    @else
+                                    <p class="text-dark fw-bold mb-0" style="font-size: 0.95rem;">{{ number_format($product->price) }}₫</p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endforeach
+        </div>
+        
+        @if($relatedProducts->count() > 5)
+        <button class="carousel-control-prev" type="button" data-bs-target="#relatedProductsCarousel" data-bs-slide="prev" style="left: -30px; width: auto;">
+            <span class="d-flex align-items-center justify-content-center rounded-circle" style="background-color: #dc3545; width: 40px; height: 40px; border: 2px solid #fff;" aria-hidden="true">
+                <i class="bi bi-chevron-left text-white fs-5"></i>
+            </span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#relatedProductsCarousel" data-bs-slide="next" style="right: -30px; width: auto;">
+            <span class="d-flex align-items-center justify-content-center rounded-circle" style="background-color: #dc3545; width: 40px; height: 40px; border: 2px solid #fff;" aria-hidden="true">
+                <i class="bi bi-chevron-right text-white fs-5"></i>
+            </span>
+            <span class="visually-hidden">Next</span>
+        </button>
+        @endif
+    </div>
+</div>
+@endif
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

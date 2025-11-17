@@ -30,14 +30,15 @@
                         <span class="ms-2 fw-semibold d-none d-md-inline">Danh mục sản phẩm</span>
                     </button>
                     <ul class="dropdown-menu p-0 shadow border-0 header-categories-dropdown" aria-labelledby="categoriesBtnScrolled">
-                        <li><a class="menu-item" href="#"><i class="bi bi-egg"></i><span>Tổ Yến</span><i class="bi bi-chevron-right"></i></a></li>
-                        <li><a class="menu-item" href="#"><i class="bi bi-droplet"></i><span>Yến Chưng Tươi</span><i class="bi bi-chevron-right"></i></a></li>
-                        <li><a class="menu-item" href="#"><i class="bi bi-jar"></i><span>Yến Chưng Sẵn</span><i class="bi bi-chevron-right"></i></a></li>
-                        <li><a class="menu-item" href="#"><i class="bi bi-flower1"></i><span>Cici Skin Aura</span><i class="bi bi-chevron-right"></i></a></li>
-                        <li><a class="menu-item" href="#"><i class="bi bi-gift"></i><span>Set Quà Biếu Cao Cấp</span><i class="bi bi-chevron-right"></i></a></li>
-                        <li><a class="menu-item" href="#"><i class="bi bi-cake2"></i><span>Set Bánh Trung Thu</span><i class="bi bi-chevron-right"></i></a></li>
-                        <li><a class="menu-item" href="#"><i class="bi bi-cup-hot"></i><span>Soup Bóng Cá</span><i class="bi bi-chevron-right"></i></a></li>
-                        <li><a class="menu-item" href="#"><i class="bi bi-shop"></i><span>Fer Valley</span><i class="bi bi-chevron-right"></i></a></li>
+                        @foreach($globalCategories ?? [] as $category)
+                        <li>
+                          <a class="menu-item" href="/products?category={{ urlencode($category) }}">
+                            <i class="bi bi-box-seam"></i>
+                            <span>{{ $category }}</span>
+                            <i class="bi bi-chevron-right"></i>
+                          </a>
+                        </li>
+                        @endforeach
                     </ul>
                 </div>
 
@@ -116,14 +117,15 @@
 
           <!-- Custom styled dropdown -->
           <ul class="dropdown-menu p-0 shadow border-0 header-categories-dropdown" aria-labelledby="categoriesBtn">
-            <li><a class="menu-item" href="#"><i class="bi bi-egg"></i><span>Tổ Yến</span><i class="bi bi-chevron-right"></i></a></li>
-            <li><a class="menu-item" href="#"><i class="bi bi-droplet"></i><span>Yến Chưng Tươi</span><i class="bi bi-chevron-right"></i></a></li>
-            <li><a class="menu-item" href="#"><i class="bi bi-jar"></i><span>Yến Chưng Sẵn</span><i class="bi bi-chevron-right"></i></a></li>
-            <li><a class="menu-item" href="#"><i class="bi bi-flower1"></i><span>Cici Skin Aura</span><i class="bi bi-chevron-right"></i></a></li>
-            <li><a class="menu-item" href="#"><i class="bi bi-gift"></i><span>Set Quà Biếu Cao Cấp</span><i class="bi bi-chevron-right"></i></a></li>
-            <li><a class="menu-item" href="#"><i class="bi bi-cake2"></i><span>Set Bánh Trung Thu</span><i class="bi bi-chevron-right"></i></a></li>
-            <li><a class="menu-item" href="#"><i class="bi bi-cup-hot"></i><span>Soup Bóng Cá</span><i class="bi bi-chevron-right"></i></a></li>
-            <li><a class="menu-item" href="#"><i class="bi bi-shop"></i><span>Fer Valley</span><i class="bi bi-chevron-right"></i></a></li>
+            @foreach($globalCategories ?? [] as $category)
+            <li>
+              <a class="menu-item" href="/products?category={{ urlencode($category) }}">
+                <i class="bi bi-box-seam"></i>
+                <span>{{ $category }}</span>
+                <i class="bi bi-chevron-right"></i>
+              </a>
+            </li>
+            @endforeach
           </ul>
         </div>
 

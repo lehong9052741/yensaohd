@@ -353,133 +353,42 @@
     <div class="container">
         <section class="mb-5">
             <h4 class="text-center mb-4 fw-bold">Ý Kiến Khách Hàng</h4>
+            @if(isset($customerReviews) && count($customerReviews) > 0)
             <div id="customerReviewsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
                 <div class="carousel-indicators">
-                    <button type="button" data-bs-target="#customerReviewsCarousel" data-bs-slide-to="0" class="active" aria-current="true"></button>
-                    <button type="button" data-bs-target="#customerReviewsCarousel" data-bs-slide-to="1"></button>
+                    @foreach(array_chunk($customerReviews, 3) as $index => $chunk)
+                    <button type="button" data-bs-target="#customerReviewsCarousel" data-bs-slide-to="{{ $index }}" class="{{ $index == 0 ? 'active' : '' }}" aria-current="{{ $index == 0 ? 'true' : 'false' }}"></button>
+                    @endforeach
                 </div>
                 <div class="carousel-inner">
-                    <!-- Slide 1: First 3 reviews -->
-                    <div class="carousel-item active">
+                    @foreach(array_chunk($customerReviews, 3) as $index => $reviewChunk)
+                    <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
                         <div class="row g-4">
+                            @foreach($reviewChunk as $review)
                             <div class="col-md-4">
                                 <div class="review-card text-center p-4 h-100">
                                     <div class="customer-avatar mx-auto mb-3">
-                                        <img src="{{ asset('images/customers/customer1.jpg') }}" alt="Nguyễn Văn A" class="rounded-circle">
+                                        <img src="{{ asset($review['avatar']) }}" alt="{{ $review['name'] }}" class="rounded-circle" onerror="this.src='{{ asset('images/avatars/default-avatar.jpg') }}'">
                                     </div>
-                                    <h5 class="customer-name fw-bold mb-2">Nguyễn Văn A</h5>
+                                    <h5 class="customer-name fw-bold mb-2">{{ $review['name'] }}</h5>
                                     <div class="rating mb-3">
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
+                                        @for($i = 1; $i <= 5; $i++)
+                                            @if($i <= $review['rating'])
+                                                <i class="bi bi-star-fill text-warning"></i>
+                                            @else
+                                                <i class="bi bi-star text-warning"></i>
+                                            @endif
+                                        @endfor
                                     </div>
                                     <p class="review-text text-muted fst-italic">
-                                        "Sản phẩm rất tốt, đóng gói kỹ lưỡng. Chất lượng yến sào tuyệt vời, gia đình tôi rất hài lòng. Sẽ tiếp tục ủng hộ!"
+                                        "{{ $review['review'] }}"
                                     </p>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="review-card text-center p-4 h-100">
-                                    <div class="customer-avatar mx-auto mb-3">
-                                        <img src="{{ asset('images/customers/customer2.jpg') }}" alt="Trần Thị B" class="rounded-circle">
-                                    </div>
-                                    <h5 class="customer-name fw-bold mb-2">Trần Thị B</h5>
-                                    <div class="rating mb-3">
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star text-warning"></i>
-                                    </div>
-                                    <p class="review-text text-muted fst-italic">
-                                        "Dịch vụ nhanh chóng, nhân viên tư vấn nhiệt tình. Giá cả hợp lý, chất lượng tốt. Rất đáng để mua!"
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="review-card text-center p-4 h-100">
-                                    <div class="customer-avatar mx-auto mb-3">
-                                        <img src="{{ asset('images/customers/customer3.jpg') }}" alt="Lê Minh C" class="rounded-circle">
-                                    </div>
-                                    <h5 class="customer-name fw-bold mb-2">Lê Minh C</h5>
-                                    <div class="rating mb-3">
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                    </div>
-                                    <p class="review-text text-muted fst-italic">
-                                        "Yến sào chất lượng cao, nguồn gốc rõ ràng. Đã mua nhiều lần và luôn hài lòng. Cảm ơn shop!"
-                                    </p>
-                                </div>
-                            </div>
+                            @endforeach
                         </div>
                     </div>
-                    <!-- Slide 2: Next 3 reviews -->
-                    <div class="carousel-item">
-                        <div class="row g-4">
-                            <div class="col-md-4">
-                                <div class="review-card text-center p-4 h-100">
-                                    <div class="customer-avatar mx-auto mb-3">
-                                        <img src="{{ asset('images/customers/customer1.jpg') }}" alt="Phạm Văn D" class="rounded-circle">
-                                    </div>
-                                    <h5 class="customer-name fw-bold mb-2">Phạm Văn D</h5>
-                                    <div class="rating mb-3">
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                    </div>
-                                    <p class="review-text text-muted fst-italic">
-                                        "Shop giao hàng đúng hẹn, sản phẩm chất lượng. Rất hài lòng với dịch vụ!"
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="review-card text-center p-4 h-100">
-                                    <div class="customer-avatar mx-auto mb-3">
-                                        <img src="{{ asset('images/customers/customer2.jpg') }}" alt="Hoàng Thị E" class="rounded-circle">
-                                    </div>
-                                    <h5 class="customer-name fw-bold mb-2">Hoàng Thị E</h5>
-                                    <div class="rating mb-3">
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star text-warning"></i>
-                                    </div>
-                                    <p class="review-text text-muted fst-italic">
-                                        "Yến sào ngon, bổ dưỡng. Gia đình tôi dùng rất thích. Sẽ giới thiệu cho bạn bè!"
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="review-card text-center p-4 h-100">
-                                    <div class="customer-avatar mx-auto mb-3">
-                                        <img src="{{ asset('images/customers/customer3.jpg') }}" alt="Vũ Minh F" class="rounded-circle">
-                                    </div>
-                                    <h5 class="customer-name fw-bold mb-2">Vũ Minh F</h5>
-                                    <div class="rating mb-3">
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                    </div>
-                                    <p class="review-text text-muted fst-italic">
-                                        "Chất lượng tuyệt vời, giá cả phải chăng. Rất đáng để thử!"
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                            </p>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#customerReviewsCarousel" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -490,6 +399,9 @@
                     <span class="visually-hidden">Next</span>
                 </button>
             </div>
+            @else
+            <p class="text-center text-muted">Chưa có đánh giá nào.</p>
+            @endif
         </section>
     </div>
 

@@ -3,8 +3,22 @@
 @section('content')
 <div class="container my-5 product-padding">
     <!-- Page Header -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item"><a href="/" class="text-decoration-none breadcrumb-link">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="/products" class="text-decoration-none breadcrumb-link">Sản phẩm</a></li>
+            @if(request('category'))
+                <li class="breadcrumb-item active" aria-current="page">{{ request('category') }}</li>
+            @elseif(request('search'))
+                <li class="breadcrumb-item active" aria-current="page">Tìm kiếm</li>
+            @else
+                <li class="breadcrumb-item active" aria-current="page">Tất cả sản phẩm</li>
+            @endif
+        </ol>
+    </nav>
     <div class="mb-4">
-        <div class="category-title-wrapper-product">
+        <!-- Title -->
+        <div class="category-title-wrapper-product mb-4">
             <h2 class="category-title mb-0">
                 @if(request('search'))
                     Kết quả tìm kiếm: "{{ request('search') }}"
@@ -16,10 +30,32 @@
             </h2>
         </div>
         
-        <!-- Search Bar -->
-        <div class="row mb-4">
-            <div class="col-md-6 text-start">
-                <p class="text-muted mt-2">Tổng có <strong>{{ $products->total() }}</strong> sản phẩm</p>
+        <div class="row align-items-center">
+            <!-- Left: Breadcrumb and Product Count -->
+            <div class="col-md-6">
+                <!-- Product Count -->
+                <p class="text-muted mb-0 product-count-text">
+                    <i class="bi bi-box-seam me-1"></i>
+                    Tổng có <strong class="product-count-strong">{{ $products->total() }}</strong> sản phẩm
+                </p>
+            </div>
+            
+            <!-- Right: Sort Options -->
+            <div class="col-md-6">
+                <div class="d-flex justify-content-md-end align-items-center gap-2 mt-3 mt-md-0">
+                    <label class="mb-0 me-2 text-muted sort-label">
+                        <i class="bi bi-funnel me-1"></i>Sắp xếp:
+                    </label>
+                    <select class="form-select form-select-sm sort-select" id="sortProducts">
+                        <option value="" {{ !request('sort') ? 'selected' : '' }}>Mặc định</option>
+                        <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Giá: Thấp đến cao</option>
+                        <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Giá: Cao đến thấp</option>
+                        <option value="discount" {{ request('sort') == 'discount' ? 'selected' : '' }}>Giảm giá nhiều nhất</option>
+                        <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Mới nhất</option>
+                        <option value="name_asc" {{ request('sort') == 'name_asc' ? 'selected' : '' }}>Tên: A-Z</option>
+                        <option value="name_desc" {{ request('sort') == 'name_desc' ? 'selected' : '' }}>Tên: Z-A</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
@@ -84,76 +120,204 @@
             </a>
         </div>
     @endif
-</div>
-
-<!-- Related Products Section -->
-@if(isset($relatedProducts) && $relatedProducts->count() > 0)
-<div class="container my-5">
-    <div class="category-title-wrapper-product">
-        <h3 class="category-title mb-0">Sản Phẩm Liên Quan</h3>
-    </div>
-    
-    <div id="relatedProductsCarousel" class="carousel slide mt-4 position-relative" data-bs-ride="carousel" data-bs-interval="3000" style="padding: 0 50px;">
-        <div class="carousel-inner">
-            @foreach($relatedProducts->chunk(2) as $index => $chunk)
-            <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
-                <div class="d-flex justify-content-center gap-3">
-                    @foreach($chunk as $product)
-                    <div style="width: 18%; min-width: 160px;">
-                        <div class="card h-100 shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
-                            <div style="position: relative; overflow: hidden;">
-                                <img src="{{ $product->image ? asset('storage/'.$product->image) : asset('images/products/product-1.jpg') }}" 
-                                     class="card-img-top" 
-                                     style="height: 180px; object-fit: cover; cursor: pointer; transition: transform 0.3s ease;"
-                                     onmouseover="this.style.transform='scale(1.1)'"
-                                     onmouseout="this.style.transform='scale(1)'"
-                                     onclick="window.location.href='{{ url('/products/' . $product->id) }}'"
-                                     alt="{{ $product->name }}">
-                                @if($product->has_sale)
-                                <div style="position: absolute; top: 8px; right: 8px; background-color: #dc3545; color: white; padding: 4px 8px; border-radius: 5px; font-weight: bold; font-size: 0.75rem; z-index: 5;">
-                                    -{{ $product->discount_percent }}%
-                                </div>
-                                @endif
-                            </div>
-                            <div class="card-body p-2" style="cursor: pointer;" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">
-                                <h6 class="card-title mb-2" style="font-size: 0.85rem; line-height: 1.3; height: 2.6rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{ $product->name }}</h6>
-                                <div class="text-end">
+    <!-- Related Products Section -->
+    @if(isset($relatedProducts) && $relatedProducts->count() > 0)
+    <div class="col-12 related-products-section">
+        <h3 class="category-title mb-4 text-left related-products-title">Sản Phẩm Liên Quan</h3>
+        
+        <div id="relatedProductsCarousel" class="carousel slide position-relative related-products-carousel" data-bs-ride="carousel" data-bs-interval="3000">
+            <div class="carousel-inner">
+                @foreach($relatedProducts->chunk(4) as $index => $chunk)
+                <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
+                    <div class="d-flex justify-content-center gap-3">
+                        @foreach($chunk as $product)
+                        <div class="related-product-card">
+                            <div class="card h-100 shadow-sm border-1 related-product-card-inner">
+                                <div class="related-product-image-wrapper">
+                                    <img src="{{ $product->image ? asset('storage/'.$product->image) : asset('images/products/product-1.jpg') }}" 
+                                         class="card-img-top related-product-image" 
+                                         onmouseover="this.style.transform='scale(1.1)'"
+                                         onmouseout="this.style.transform='scale(1)'"
+                                         onclick="window.location.href='{{ url('/products/' . $product->id) }}'"
+                                         alt="{{ $product->name }}">
                                     @if($product->has_sale)
-                                    <small class="text-muted text-decoration-line-through d-block" style="font-size: 0.75rem;">{{ number_format($product->price) }}₫</small>
-                                    <p class="text-danger fw-bold mb-0" style="font-size: 0.95rem;">{{ number_format($product->display_price) }}₫</p>
-                                    @else
-                                    <p class="text-dark fw-bold mb-0" style="font-size: 0.95rem;">{{ number_format($product->price) }}₫</p>
+                                    <div class="related-product-discount-badge">
+                                        -{{ $product->discount_percent }}%
+                                    </div>
                                     @endif
                                 </div>
+                                <div class="card-body p-2 related-product-body" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">
+                                    <h6 class="card-title mb-2 related-product-title">{{ $product->name }}</h6>
+                                    <div class="text-end">
+                                        @if($product->has_sale)
+                                        <small class="text-muted text-decoration-line-through d-block related-product-price-old">{{ number_format($product->price) }}₫</small>
+                                        <p class="text-danger fw-bold mb-0 related-product-price-new">{{ number_format($product->display_price) }}₫</p>
+                                        @else
+                                        <p class="text-dark fw-bold mb-0 related-product-price-new">{{ number_format($product->price) }}₫</p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            
+            @if($relatedProducts->count() > 4)
+            <button class="carousel-control-prev related-products-control-prev" type="button" data-bs-target="#relatedProductsCarousel" data-bs-slide="prev">
+                <span class="d-flex align-items-center justify-content-center rounded-circle related-products-control-icon" aria-hidden="true">
+                    <i class="bi bi-chevron-left text-white fs-5"></i>
+                </span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next related-products-control-next" type="button" data-bs-target="#relatedProductsCarousel" data-bs-slide="next">
+                <span class="d-flex align-items-center justify-content-center rounded-circle related-products-control-icon" aria-hidden="true">
+                    <i class="bi bi-chevron-right text-white fs-5"></i>
+                </span>
+                <span class="visually-hidden">Next</span>
+            </button>
+            @endif
+        </div>
+    </div>
+    @endif
+
+</div>
+
+<!-- Yến Thô Information Section -->
+@if(isset($yenThoInfo) && !empty($yenThoInfo))
+<div class="container my-5">
+    <section class="yen-tho-info-section py-5 px-4">
+        <div class="row">
+            <!-- Main Title -->
+            <div class="col-12 mb-5">
+                <h2 class="text-center fw-bold mb-3 yen-tho-title">
+                    {{ $yenThoInfo['title'] ?? 'YẾN THÔ LÀ GÌ?' }}
+                </h2>
+                <div class="text-center mb-4">
+                    <div class="yen-tho-title-divider"></div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="col-12 mb-5">
+                <p class="text-center px-md-5 mx-auto yen-tho-description">
+                    {{ $yenThoInfo['description'] ?? '' }}
+                </p>
+            </div>
+
+            <!-- Features Grid -->
+            @if(isset($yenThoInfo['features']) && count($yenThoInfo['features']) > 0)
+            <div class="col-12 mb-5">
+                <h4 class="text-center fw-bold mb-4 yen-tho-features-title">{{ $yenThoInfo['features_title'] ?? 'TỔ YẾN THÔ CÓ TỐT KHÔNG?' }}</h4>
+                <div class="row g-4 px-md-3">
+                    @foreach($yenThoInfo['features'] as $feature)
+                    <div class="col-md-6">
+                        <div class="info-card h-100 p-4 yen-tho-feature-card">
+                            <h5 class="fw-bold mb-3 yen-tho-feature-title">
+                                <i class="{{ $feature['icon'] ?? 'bi-check-circle-fill' }} me-2"></i>{{ $feature['title'] }}
+                            </h5>
+                            <p class="mb-0 yen-tho-feature-description">
+                                {{ $feature['description'] }}
+                            </p>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
+            <!-- Storage Guide -->
+            @if(isset($yenThoInfo['storage']))
+            <div class="col-12 mt-2 mb-5">
+                <div class="p-4 mx-md-3 yen-tho-storage-box">
+                    <h4 class="fw-bold mb-4 text-center yen-tho-storage-title">
+                        <i class="{{ $yenThoInfo['storage']['icon'] ?? 'bi-box-seam' }} me-2 yen-tho-storage-icon"></i>{{ $yenThoInfo['storage']['title'] ?? 'CÁCH BẢO QUẢN YẾN THÔ' }}
+                    </h4>
+                    <div class="row px-2">
+                        @php
+                            $tips = $yenThoInfo['storage']['tips'] ?? [];
+                            $half = ceil(count($tips) / 2);
+                        @endphp
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            @foreach(array_slice($tips, 0, $half) as $tip)
+                            <p class="mb-3 yen-tho-storage-tip"><i class="bi bi-check2-circle text-success me-2 yen-tho-storage-tip-icon"></i>{{ $tip }}</p>
+                            @endforeach
+                        </div>
+                        <div class="col-md-6">
+                            @foreach(array_slice($tips, $half) as $tip)
+                            <p class="{{ $loop->last ? 'mb-0' : 'mb-3' }} yen-tho-storage-tip"><i class="bi bi-check2-circle text-success me-2 yen-tho-storage-tip-icon"></i>{{ $tip }}</p>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            <!-- Note -->
+            @if(isset($yenThoInfo['note']))
+            <div class="col-12 mb-5">
+                <div class="alert alert-warning d-flex align-items-start mx-md-3 p-4 yen-tho-note-box" role="alert">
+                    <i class="{{ $yenThoInfo['note']['icon'] ?? 'bi-info-circle-fill' }} fs-3 me-3 mt-1 yen-tho-note-icon"></i>
+                    <div class="yen-tho-note-text">
+                        <strong class="yen-tho-note-strong">Lưu ý:</strong> {{ $yenThoInfo['note']['text'] ?? '' }}
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            <!-- FAQ Accordion -->
+            @if(isset($yenThoInfo['faqs']) && count($yenThoInfo['faqs']) > 0)
+            <div class="col-12 mt-3">
+                <h4 class="text-center fw-bold mb-5 yen-tho-faq-title">NHỮNG ĐIỀU CẦN BIẾT VỀ YẾN THÔ</h4>
+                <div class="accordion mx-md-3" id="yenThoFaqAccordion">
+                    @foreach($yenThoInfo['faqs'] as $index => $faq)
+                    <div class="accordion-item mb-3 yen-tho-faq-item">
+                        <h2 class="accordion-header" id="heading{{ $index }}">
+                            <button class="accordion-button {{ $index == 0 ? '' : 'collapsed' }} yen-tho-faq-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $index }}" aria-expanded="{{ $index == 0 ? 'true' : 'false' }}" aria-controls="collapse{{ $index }}">
+                                <i class="bi bi-question-circle-fill me-3 yen-tho-faq-icon"></i>
+                                <span>{{ $faq['question'] }}</span>
+                            </button>
+                        </h2>
+                        <div id="collapse{{ $index }}" class="accordion-collapse collapse {{ $index == 0 ? 'show' : '' }}" aria-labelledby="heading{{ $index }}" data-bs-parent="#yenThoFaqAccordion">
+                            <div class="accordion-body yen-tho-faq-body">
+                                {!! nl2br(e($faq['answer'])) !!}
+                                @if(isset($faq['image']) && $faq['image'])
+                                <div class="text-center mt-4">
+                                    <img src="{{ asset($faq['image']) }}" alt="{{ $faq['question'] }}" class="img-fluid rounded shadow">
+                                </div>
+                                @endif
                             </div>
                         </div>
                     </div>
                     @endforeach
                 </div>
             </div>
-            @endforeach
+            @endif
         </div>
-        
-        @if($relatedProducts->count() > 2)
-        <button class="carousel-control-prev" type="button" data-bs-target="#relatedProductsCarousel" data-bs-slide="prev" style="left: 5px; width: auto;">
-            <span class="d-flex align-items-center justify-content-center rounded-circle" style="background-color: rgba(200, 200, 200, 0.8); width: 35px; height: 35px;" aria-hidden="true">
-                <i class="bi bi-chevron-left text-white fs-5"></i>
-            </span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#relatedProductsCarousel" data-bs-slide="next" style="right: 5px; width: auto;">
-            <span class="d-flex align-items-center justify-content-center rounded-circle" style="background-color: rgba(200, 200, 200, 0.8); width: 35px; height: 35px;" aria-hidden="true">
-                <i class="bi bi-chevron-right text-white fs-5"></i>
-            </span>
-            <span class="visually-hidden">Next</span>
-        </button>
-        @endif
-    </div>
+    </section>
 </div>
 @endif
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Handle sort products
+    const sortSelect = document.getElementById('sortProducts');
+    if (sortSelect) {
+        sortSelect.addEventListener('change', function() {
+            const sortValue = this.value;
+            const url = new URL(window.location.href);
+            
+            if (sortValue) {
+                url.searchParams.set('sort', sortValue);
+            } else {
+                url.searchParams.delete('sort');
+            }
+            
+            window.location.href = url.toString();
+        });
+    }
+
     // Handle add to cart forms with AJAX
     const cartForms = document.querySelectorAll('.add-to-cart-form');
     

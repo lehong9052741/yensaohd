@@ -1,0 +1,46 @@
+{
+  "reviews": [
+    {
+      "id": 1,
+      "name": "Nguyễn Văn A",
+      "avatar": "/images/avatars/customer1.jpg",
+      "rating": 5,
+      "review": "Sản phẩm tuyệt vời! Yến sào chất lượng cao, đóng gói cẩn thận. Gia đình tôi rất hài lòng với sản phẩm này."
+    },
+    {
+      "id": 2,
+      "name": "Trần Thị B",
+      "avatar": "/images/avatars/customer2.jpg",
+      "rating": 5,
+      "review": "Giao hàng nhanh chóng, yến sào ngon, giá cả hợp lý. Tôi sẽ tiếp tục ủng hộ shop!"
+    },
+    {
+      "id": 3,
+      "name": "Lê Minh C",
+      "avatar": "/images/avatars/customer3.jpg",
+      "rating": 5,
+      "review": "Đã dùng sản phẩm được 2 tháng, da dẻ và sức khỏe cải thiện rõ rệt. Rất đáng tin cậy!"
+    },
+    {
+      "id": 4,
+      "name": "Phạm Văn D",
+      "avatar": "/images/avatars/customer4.jpg",
+      "rating": 5,
+      "review": "Shop tư vấn nhiệt tình, sản phẩm chất lượng. Tôi đã giới thiệu cho nhiều người biết."
+    },
+    {
+      "id": 5,
+      "name": "Hoàng Thị E",
+      "avatar": "/images/avatars/customer5.jpg",
+      "rating": 5,
+      "review": "Yến sào sạch, an toàn. Mua cho mẹ và bé uống rất yên tâm. Cảm ơn shop!"
+    },
+    {
+      "id": 6,
+      "name": "Võ Văn F",
+      "avatar": "/images/avatars/customer6.jpg",
+      "rating": 5,
+      "review": "Chất lượng tuyệt vời, giá cả phải chăng. Tôi sẽ quay lại mua tiếp!"
+    }
+  ]
+}

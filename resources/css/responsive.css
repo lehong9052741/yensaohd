@@ -497,7 +497,7 @@
     /* Best Seller Section - 4 products per slide on Desktop */
     .best-seller-carousel .carousel-item > div {
         display: flex !important;
-        justify-content: center !important;
+        justify-content: flex-start !important;
         gap: 15px !important;
     }
 
@@ -509,9 +509,22 @@
     .best-seller-carousel .card-img-top {
         height: 220px !important;
     }
+
+    /* Related Products Carousel - 4 products per slide on Desktop */
+    #relatedProductsCarousel .carousel-item > div {
+        display: flex !important;
+        justify-content: left !important;
+        gap: 15px !important;
+    }
+
+    #relatedProductsCarousel .carousel-item > div > div {
+        width: 23% !important;
+        min-width: 200px !important;
+    }
 }
 
-    /* Related Products Carousel - 2 products per slide */
+/* Related Products Carousel - 2 products per slide on Mobile & Tablet */
+@media (max-width: 991px) {
     #relatedProductsCarousel {
         padding: 0 50px !important;
     }
@@ -527,6 +540,7 @@
         width: 100% !important;
         min-width: auto !important;
     }
+}
 
     #relatedProductsCarousel .carousel-control-prev,
     #relatedProductsCarousel .carousel-control-next {

@@ -1,0 +1,70 @@
+{
+  "title": "YẾN THÔ LÀ GÌ?",
+  "description": "Là loại tổ yến nguyên chất 100% chưa qua giai đoạn xử lý nào nên còn nguyên lông và một số tạp chất khác. Yến thô nguyên tổ chưa qua xử lý rút lông nên có giá thành rẻ hơn Yến tinh chế, chúng được thu hoạch từ nhà yến, hang động hoặc vách núi, đặc biệt khi sử dụng tổ yến thô sẽ đảm bảo giữ nguyên mùi vị và 100% chất dinh dưỡng có trong tổ yến.",
+  "features_title": "TỔ YẾN THÔ CÓ TỐT KHÔNG?",
+  "features": [
+    {
+      "icon": "bi-check-circle-fill",
+      "title": "Sợi yến thô",
+      "description": "Nở to 4-5 lần khi đem chưng (nở nhiều hơn yến tinh chế), giòn dai hơn, có mùi tanh đặc trưng của yến tự nhiên."
+    },
+    {
+      "icon": "bi-check-circle-fill",
+      "title": "Hàm lượng dinh dưỡng",
+      "description": "Nguyên chất, 100% dinh dưỡng giữ nguyên vì hoàn toàn chưa chế biến làm sạch. Đảm bảo chất lượng tự nhiên cao nhất."
+    },
+    {
+      "icon": "bi-check-circle-fill",
+      "title": "Kích thước",
+      "description": "Nguyên tổ từ 4-10g tùy loại, được thu hoạch trực tiếp từ nhà yến lâu năm tại Khánh Hòa."
+    },
+    {
+      "icon": "bi-check-circle-fill",
+      "title": "Tình trạng",
+      "description": "Chưa xử lý, còn nguyên lông. Cần ngâm và làm sạch lông, tạp chất trước khi chưng yến."
+    }
+  ],
+  "storage": {
+    "title": "CÁCH BẢO QUẢN YẾN THÔ",
+    "icon": "bi-box-seam",
+    "tips": [
+      "Bảo quản trong môi trường thoáng mát",
+      "Hạn chế nhiệt cao và ánh nắng mạnh",
+      "Không để ở nơi có độ ẩm cao",
+      "Đặt trong hộp kín hoặc túi hút chân không",
+      "Thời gian bảo quản: 2-3 năm",
+      "100% dinh dưỡng được giữ nguyên"
+    ]
+  },
+  "note": {
+    "icon": "bi-info-circle-fill",
+    "text": "Yến thô rất tốt bởi chưa được xử lý nên giá trị dinh dưỡng luôn đạt 100% và đặc biệt chúng rất khó làm giả. Tuy nhiên, sẽ tốn thời gian ở công đoạn rút lông làm sạch và yến có mùi tanh nhẹ nên sẽ hơi khó ăn nếu không quen."
+  },
+  "faqs": [
+    {
+      "question": "1 lạng yến thô được bao nhiêu yến tươi?",
+      "answer": "Cứ 100g yến sào thô đem ngâm trong nước, sau khi làm sạch lông sẽ được khoảng 400g đến 600g yến tươi. Yến thô thường được đem sấy khô để bảo quản và sử dụng được lâu hơn. Chính vì thế mà nó nhẹ hơn yến tươi 4 – 6 lần.",
+      "image": null
+    },
+    {
+      "question": "Yến thô có làm giả được không?",
+      "answer": "Yến thô là yến nguyên chất khó làm giả nhưng không phải là không có. Rất nhiều địa chỉ đã cho thêm vào yến thô một số chất phụ gia nhằm tăng trọng lượng, thông qua đó móc túi khách hàng. Yến sào thô giả thường được cho thêm muối, mật ong pha loãng hay lòng trắng trứng gà,… lên bề mặt tổ yến. Các bạn cần tinh ý và chọn lựa địa chỉ uy tín để mua sản phẩm chất lượng.",
+      "image": null
+    },
+    {
+      "question": "1 lạng yến thô bao nhiêu tiền?",
+      "answer": "Trên thị trường có rất nhiều giá bán khác nhau tùy từng đơn vị cung cấp. Giá bán 100g yến sào thô loại đặc biệt tại Yến Sào Hoàng Đăng có giá cạnh tranh và chất lượng đảm bảo. Liên hệ để được tư vấn giá tốt nhất.",
+      "image": null
+    },
+    {
+      "question": "1 lạng yến thô được bao nhiêu tổ?",
+      "answer": "Với trọng lượng của tổ yến sào thô thường từ 6g – 10g/tổ thì một hộp yến sào thô 100g sẽ có khoảng 10 – 14 tai yến.",
+      "image": null
+    },
+    {
+      "question": "Một tổ yến thô nặng bao nhiêu gram?",
+      "answer": "Một tai yến sào thô thông thường sẽ có trọng lượng vào khoảng 4 – 10g/tổ, nhưng các đơn vị thu hoạch thường chọn những loại tai yến từ 6g trở lên.",
+      "image": null
+    }
+  ]
+}

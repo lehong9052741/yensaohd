@@ -22,7 +22,15 @@ class ProductController extends Controller
         $yenTinhChe = Product::where('category', 'Yến Tinh Chế')->take(8)->get();
         $yenChungSan = Product::where('category', 'Yến Chưng Sẵn')->take(8)->get();
 
-        return view('home', compact('bestSellers', 'yenTho', 'yenTinhChe', 'yenChungSan'));
+        // Load customer reviews from JSON
+        $reviewsPath = public_path('data/customer-reviews.json');
+        $customerReviews = [];
+        if (file_exists($reviewsPath)) {
+            $reviewsData = json_decode(file_get_contents($reviewsPath), true);
+            $customerReviews = $reviewsData['reviews'] ?? [];
+        }
+
+        return view('home', compact('bestSellers', 'yenTho', 'yenTinhChe', 'yenChungSan', 'customerReviews'));
     }
 
     /** Display a listing of products. */
@@ -47,6 +55,32 @@ class ProductController extends Controller
             $query->where('category', $currentCategory);
         }
         
+        // Apply sorting
+        $sort = $request->get('sort');
+        switch ($sort) {
+            case 'price_asc':
+                $query->orderByRaw('COALESCE(sale_price, price) ASC');
+                break;
+            case 'price_desc':
+                $query->orderByRaw('COALESCE(sale_price, price) DESC');
+                break;
+            case 'discount':
+                $query->orderBy('discount_percent', 'desc');
+                break;
+            case 'newest':
+                $query->orderBy('created_at', 'desc');
+                break;
+            case 'name_asc':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('name', 'desc');
+                break;
+            default:
+                $query->orderBy('id', 'desc');
+                break;
+        }
+        
         $products = $query->paginate(12);
         $searchKeyword = $request->search ?? '';
         
@@ -59,7 +93,14 @@ class ProductController extends Controller
                 ->get();
         }
         
-        return view('products.index', compact('products', 'searchKeyword', 'relatedProducts'));
+        // Load yến thô information from JSON
+        $yenThoInfoPath = public_path('data/yen-tho-info.json');
+        $yenThoInfo = [];
+        if (file_exists($yenThoInfoPath)) {
+            $yenThoInfo = json_decode(file_get_contents($yenThoInfoPath), true);
+        }
+        
+        return view('products.index', compact('products', 'searchKeyword', 'relatedProducts', 'yenThoInfo'));
     }
 
     /** Display products on promotion/sale */

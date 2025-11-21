@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('content')
-<div class="container" style="max-width:480px">
+<div class="container" style="max-width:480px!important">
     <h2 class="mb-3">Đăng nhập</h2>
 
     <form method="post" action="/login">

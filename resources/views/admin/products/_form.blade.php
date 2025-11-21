@@ -41,14 +41,20 @@
             </div>
 
             <div class="col-md-4 mb-3">
-                <label class="form-label">Danh mục</label>
-                <select name="category" class="form-select">
-                    <option value="">-- Chọn danh mục --</option>
-                    <option value="Yến Thô" {{ old('category', $product->category ?? '') == 'Yến Thô' ? 'selected' : '' }}>Yến Thô</option>
-                    <option value="Yến Tinh Chế" {{ old('category', $product->category ?? '') == 'Yến Tinh Chế' ? 'selected' : '' }}>Yến Tinh Chế</option>
-                    <option value="Yến Chưng Sẵn" {{ old('category', $product->category ?? '') == 'Yến Chưng Sẵn' ? 'selected' : '' }}>Yến Chưng Sẵn</option>
-                </select>
+                <label class="form-label">Khối lượng</label>
+                <input type="text" name="weight" class="form-control" value="{{ old('weight', $product->weight ?? '') }}" placeholder="VD: 50g, 100g, 1kg">
+                <small class="text-muted">Ví dụ: 50g, 100g, 1kg</small>
             </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Danh mục</label>
+            <select name="category" class="form-select">
+                <option value="">-- Chọn danh mục --</option>
+                <option value="Yến Thô" {{ old('category', $product->category ?? '') == 'Yến Thô' ? 'selected' : '' }}>Yến Thô</option>
+                <option value="Yến Tinh Chế" {{ old('category', $product->category ?? '') == 'Yến Tinh Chế' ? 'selected' : '' }}>Yến Tinh Chế</option>
+                <option value="Yến Chưng Sẵn" {{ old('category', $product->category ?? '') == 'Yến Chưng Sẵn' ? 'selected' : '' }}>Yến Chưng Sẵn</option>
+            </select>
         </div>
 
         <div class="mb-3">

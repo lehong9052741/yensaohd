@@ -69,7 +69,16 @@
                             <img src="{{ $item['image'] ? asset('storage/'.$item['image']) : asset('images/products/product-1.jpg') }}" 
                                  alt="{{ $item['name'] }}" 
                                  class="cart-item-image">
-                            <a href="/products/{{ $id }}" class="cart-item-name">{{ $item['name'] }}</a>
+                            <div>
+                                <a href="/products/{{ $id }}" class="cart-item-name">{{ $item['name'] }}</a>
+                                @if(isset($item['weight']) && $item['weight'])
+                                <div class="mt-1">
+                                    <span class="badge" style="background-color: #28a745; color: white; font-size: 0.75rem;">
+                                        <i class="bi bi-box-seam me-1"></i>{{ $item['weight'] }}
+                                    </span>
+                                </div>
+                                @endif
+                            </div>
                         </div>
                     </div>
                     <div class="col-2 text-center">

@@ -54,13 +54,18 @@
                                         <div style="position: relative; overflow: hidden;">
                                             <img src="{{ $product->image ? asset('storage/'.$product->image) : asset('images/products/product-1.jpg') }}" 
                                                  class="card-img-top" 
-                                                 style="height: 200px; object-fit: cover; cursor: pointer; transition: transform 0.3s ease;"
-                                                 onmouseover="this.style.transform='scale(1.1)'"
-                                                 onmouseout="this.style.transform='scale(1)'"
+                                                 style="height: 200px; object-fit: cover;"
                                                  alt="{{ $product->name }}">
                                             @if($product->has_sale)
                                             <div style="position: absolute; top: 8px; right: 8px; background-color: #dc3545; color: white; padding: 4px 8px; border-radius: 5px; font-weight: bold; font-size: 0.75rem; z-index: 5;">
                                                 -{{ $product->discount_percent }}%
+                                            </div>
+                                            @endif
+                                            @if($product->weight)
+                                            <div style="position: absolute; bottom: 8px; right: 8px; z-index: 5;">
+                                                <span class="badge" style="background-color: #28a745; color: white; font-size: 0.75rem;">
+                                                    <i class="bi bi-box-seam me-1"></i>{{ $product->weight }}
+                                                </span>
                                             </div>
                                             @endif
                                         </div>
@@ -178,6 +183,13 @@
                             @if($product->has_sale)
                             <div class="product-block-discount" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">-{{ $product->discount_percent }}%</div>
                             @endif
+                            @if($product->weight)
+                            <div style="position: absolute; bottom: 10px; right: 10px; z-index: 5;" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">
+                                <span class="badge" style="background-color: #28a745; color: white; font-size: 0.85rem;">
+                                    <i class="bi bi-box-seam me-1"></i>{{ $product->weight }}
+                                </span>
+                            </div>
+                            @endif
                             <form action="{{ url('/cart/add/' . $product->id) }}" method="POST" class="add-to-cart-form d-inline" data-product-name="{{ $product->name }}">
                                 @csrf
                                 <input type="hidden" name="quantity" value="1">
@@ -238,6 +250,13 @@
                             @if($product->has_sale)
                             <div class="product-block-discount" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">-{{ $product->discount_percent }}%</div>
                             @endif
+                            @if($product->weight)
+                            <div style="position: absolute; bottom: 10px; right: 10px; z-index: 5;" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">
+                                <span class="badge" style="background-color: #28a745; color: white; font-size: 0.85rem;">
+                                    <i class="bi bi-box-seam me-1"></i>{{ $product->weight }}
+                                </span>
+                            </div>
+                            @endif
                             <form action="{{ url('/cart/add/' . $product->id) }}" method="POST" class="add-to-cart-form d-inline" data-product-name="{{ $product->name }}">
                                 @csrf
                                 <input type="hidden" name="quantity" value="1">
@@ -297,6 +316,13 @@
                                  onclick="window.location.href='{{ url('/products/' . $product->id) }}'">
                             @if($product->has_sale)
                             <div class="product-block-discount" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">-{{ $product->discount_percent }}%</div>
+                            @endif
+                            @if($product->weight)
+                            <div style="position: absolute; bottom: 10px; right: 10px; z-index: 5;" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">
+                                <span class="badge" style="background-color: #28a745; color: white; font-size: 0.85rem;">
+                                    <i class="bi bi-box-seam me-1"></i>{{ $product->weight }}
+                                </span>
+                            </div>
                             @endif
                             <form action="{{ url('/cart/add/' . $product->id) }}" method="POST" class="add-to-cart-form d-inline" data-product-name="{{ $product->name }}">
                                 @csrf
@@ -405,7 +431,99 @@
         </section>
     </div>
 
-    <!-- Brand Story Section -->
+    <!-- News Section -->
+    <div class="container">
+        <section class="mb-5">
+            <div class="news-title-wrapper mb-4">
+                <h2 class="news-title mb-0">
+                    <i class="bi bi-newspaper me-2"></i>Tin Tức Nổi Bật
+                </h2>
+            </div>
+            @php
+                $latestNews = App\Models\News::orderBy('created_at', 'desc')->take(4)->get();
+            @endphp
+            @if($latestNews->count() > 0)
+            <div class="row g-4">
+                <!-- Featured News (Large) -->
+                <div class="col-md-7">
+                    @if($latestNews->first())
+                    @php $featuredNews = $latestNews->first(); @endphp
+                    <a href="{{ url('/news/' . $featuredNews->slug) }}" class="text-decoration-none">
+                        <div class="card h-100 shadow-sm border-0 news-card" style="border-radius: 12px; overflow: hidden;">
+                            <div style="position: relative; overflow: hidden; height: 400px;">
+                                <img src="{{ $featuredNews->image ? asset('storage/'.$featuredNews->image) : asset('images/banners/logo.png') }}" 
+                                     class="card-img-top" 
+                                     style="height: 100%; width: 100%; object-fit: cover; transition: transform 0.3s ease;"
+                                     alt="{{ $featuredNews->title }}">
+                            </div>
+                            <div class="card-body" style="padding: 1.5rem;">
+                                <h4 class="card-title" style="font-size: 1.4rem; font-weight: 600; line-height: 1.4; margin-bottom: 1rem; color: #333;">
+                                    {{ $featuredNews->title }}
+                                </h4>
+                                <p class="card-text text-muted" style="font-size: 0.95rem; line-height: 1.6;">
+                                    {{ $featuredNews->excerpt ?? Str::limit(strip_tags($featuredNews->content), 150) }}
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar3 me-1"></i>{{ $featuredNews->created_at->format('d/m/Y') }}
+                                    </small>
+                                    <span class="text-danger fw-bold" style="font-size: 0.9rem;">
+                                        Đọc tiếp <i class="bi bi-arrow-right"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    @endif
+                </div>
+
+                <!-- Small News List (Right) -->
+                <div class="col-md-5">
+                    <div class="d-flex flex-column" style="gap: 1rem;">
+                        @foreach($latestNews->skip(1)->take(3) as $news)
+                        <a href="{{ url('/news/' . $news->slug) }}" class="text-decoration-none">
+                            <div class="card shadow-sm border-0 news-card" style="border-radius: 10px; overflow: hidden;">
+                                <div class="row g-0">
+                                    <div class="col-5">
+                                        <div style="height: 120px; overflow: hidden;">
+                                            <img src="{{ $news->image ? asset('storage/'.$news->image) : asset('images/banners/logo.png') }}" 
+                                                 style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;"
+                                                 alt="{{ $news->title }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-7">
+                                        <div class="card-body" style="padding: 1rem;">
+                                            <h6 class="card-title mb-2" style="font-size: 0.95rem; line-height: 1.4; height: 4.2rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; color: #333; font-weight: 600;">
+                                                {{ $news->title }}
+                                            </h6>
+                                            <small class="text-muted" style="font-size: 0.8rem;">
+                                                <i class="bi bi-calendar3 me-1"></i>{{ $news->created_at->format('d/m/Y') }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a href="{{ url('/news') }}" class="btn btn-outline-danger btn-lg" style="text-transform: uppercase; font-weight: 600; border-width: 2px; padding: 0.6rem 2rem;">
+                    XEM THÊM
+                </a>
+            </div>
+            @else
+            <div class="row">
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">Chưa có tin tức nào.</p>
+                </div>
+            </div>
+            @endif
+        </section>
+    </div>
+
+     <!-- Brand Story Section -->
     <div class="container">
         <section class="mb-5 py-5 brand-story-section">
             <div class="row align-items-center">
@@ -437,27 +555,6 @@
         </section>
     </div>
 
-    <!-- Contact Form -->
-    <!-- <div class="container">
-        <section class="mb-5 row">
-        <div class="col-md-12">
-            <h4>Form tư vấn</h4>
-            <form>
-                <div class="mb-2">
-                    <input class="form-control" placeholder="Họ và tên">
-                </div>
-                <div class="mb-2">
-                    <input class="form-control" placeholder="SĐT">
-                </div>
-                <div class="mb-2">
-                    <input class="form-control" placeholder="Email">
-                </div>
-                <div class="mb-2">
-                    <textarea class="form-control" rows="3" placeholder="Nội dung"></textarea>
-                </div>
-                <button class="btn" style="background-color:#F5B041;color:#000">Gửi tư vấn</button>
-            </form>
-        </div> -->
     </section>
 
     <script>

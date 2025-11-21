@@ -133,6 +133,14 @@ class ProductController extends Controller
     /** Display the specified product. */
     public function show(Product $product)
     {
-        return view('products.show', compact('product'));
+        // Get related products from the same category
+        $relatedProducts = Product::where('category', $product->category)
+            ->where('id', '!=', $product->id)
+            ->where('quantity', '>', 0)
+            ->inRandomOrder()
+            ->limit(4)
+            ->get();
+        
+        return view('products.show', compact('product', 'relatedProducts'));
     }
 }

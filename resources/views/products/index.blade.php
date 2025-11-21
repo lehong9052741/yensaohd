@@ -73,6 +73,13 @@
                         @if($product->has_sale)
                         <div class="product-block-discount" onclick="window.location.href='{{ url('/products/' . $product->id) }}'">-{{ $product->discount_percent }}%</div>
                         @endif
+                        @if($product->weight)
+                        <div style="position: absolute; bottom: 10px; right: 10px; z-index: 5;">
+                            <span class="badge" style="background-color: #28a745; color: white; font-size: 0.85rem;">
+                                <i class="bi bi-box-seam me-1"></i>{{ $product->weight }}
+                            </span>
+                        </div>
+                        @endif
                         <form action="{{ url('/cart/add/' . $product->id) }}" method="POST" class="add-to-cart-form d-inline" data-product-name="{{ $product->name }}">
                             @csrf
                             <input type="hidden" name="quantity" value="1">
@@ -123,8 +130,7 @@
     <!-- Related Products Section -->
     @if(isset($relatedProducts) && $relatedProducts->count() > 0)
     <div class="col-12 related-products-section">
-        <h3 class="category-title mb-4 text-left related-products-title">Sản Phẩm Liên Quan</h3>
-        
+        <h3 class="category-title-2 mb-4 text-left related-products-title">Sản Phẩm Liên Quan</h3>
         <div id="relatedProductsCarousel" class="carousel slide position-relative related-products-carousel" data-bs-ride="carousel" data-bs-interval="3000">
             <div class="carousel-inner">
                 @foreach($relatedProducts->chunk(4) as $index => $chunk)
@@ -185,120 +191,17 @@
 
 </div>
 
-<!-- Yến Thô Information Section -->
-@if(isset($yenThoInfo) && !empty($yenThoInfo))
-<div class="container my-5">
-    <section class="yen-tho-info-section py-5 px-4">
-        <div class="row">
-            <!-- Main Title -->
-            <div class="col-12 mb-5">
-                <h2 class="text-center fw-bold mb-3 yen-tho-title">
-                    {{ $yenThoInfo['title'] ?? 'YẾN THÔ LÀ GÌ?' }}
-                </h2>
-                <div class="text-center mb-4">
-                    <div class="yen-tho-title-divider"></div>
-                </div>
-            </div>
-
-            <!-- Description -->
-            <div class="col-12 mb-5">
-                <p class="text-center px-md-5 mx-auto yen-tho-description">
-                    {{ $yenThoInfo['description'] ?? '' }}
-                </p>
-            </div>
-
-            <!-- Features Grid -->
-            @if(isset($yenThoInfo['features']) && count($yenThoInfo['features']) > 0)
-            <div class="col-12 mb-5">
-                <h4 class="text-center fw-bold mb-4 yen-tho-features-title">{{ $yenThoInfo['features_title'] ?? 'TỔ YẾN THÔ CÓ TỐT KHÔNG?' }}</h4>
-                <div class="row g-4 px-md-3">
-                    @foreach($yenThoInfo['features'] as $feature)
-                    <div class="col-md-6">
-                        <div class="info-card h-100 p-4 yen-tho-feature-card">
-                            <h5 class="fw-bold mb-3 yen-tho-feature-title">
-                                <i class="{{ $feature['icon'] ?? 'bi-check-circle-fill' }} me-2"></i>{{ $feature['title'] }}
-                            </h5>
-                            <p class="mb-0 yen-tho-feature-description">
-                                {{ $feature['description'] }}
-                            </p>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
-            @endif
-
-            <!-- Storage Guide -->
-            @if(isset($yenThoInfo['storage']))
-            <div class="col-12 mt-2 mb-5">
-                <div class="p-4 mx-md-3 yen-tho-storage-box">
-                    <h4 class="fw-bold mb-4 text-center yen-tho-storage-title">
-                        <i class="{{ $yenThoInfo['storage']['icon'] ?? 'bi-box-seam' }} me-2 yen-tho-storage-icon"></i>{{ $yenThoInfo['storage']['title'] ?? 'CÁCH BẢO QUẢN YẾN THÔ' }}
-                    </h4>
-                    <div class="row px-2">
-                        @php
-                            $tips = $yenThoInfo['storage']['tips'] ?? [];
-                            $half = ceil(count($tips) / 2);
-                        @endphp
-                        <div class="col-md-6 mb-3 mb-md-0">
-                            @foreach(array_slice($tips, 0, $half) as $tip)
-                            <p class="mb-3 yen-tho-storage-tip"><i class="bi bi-check2-circle text-success me-2 yen-tho-storage-tip-icon"></i>{{ $tip }}</p>
-                            @endforeach
-                        </div>
-                        <div class="col-md-6">
-                            @foreach(array_slice($tips, $half) as $tip)
-                            <p class="{{ $loop->last ? 'mb-0' : 'mb-3' }} yen-tho-storage-tip"><i class="bi bi-check2-circle text-success me-2 yen-tho-storage-tip-icon"></i>{{ $tip }}</p>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @endif
-
-            <!-- Note -->
-            @if(isset($yenThoInfo['note']))
-            <div class="col-12 mb-5">
-                <div class="alert alert-warning d-flex align-items-start mx-md-3 p-4 yen-tho-note-box" role="alert">
-                    <i class="{{ $yenThoInfo['note']['icon'] ?? 'bi-info-circle-fill' }} fs-3 me-3 mt-1 yen-tho-note-icon"></i>
-                    <div class="yen-tho-note-text">
-                        <strong class="yen-tho-note-strong">Lưu ý:</strong> {{ $yenThoInfo['note']['text'] ?? '' }}
-                    </div>
-                </div>
-            </div>
-            @endif
-
-            <!-- FAQ Accordion -->
-            @if(isset($yenThoInfo['faqs']) && count($yenThoInfo['faqs']) > 0)
-            <div class="col-12 mt-3">
-                <h4 class="text-center fw-bold mb-5 yen-tho-faq-title">NHỮNG ĐIỀU CẦN BIẾT VỀ YẾN THÔ</h4>
-                <div class="accordion mx-md-3" id="yenThoFaqAccordion">
-                    @foreach($yenThoInfo['faqs'] as $index => $faq)
-                    <div class="accordion-item mb-3 yen-tho-faq-item">
-                        <h2 class="accordion-header" id="heading{{ $index }}">
-                            <button class="accordion-button {{ $index == 0 ? '' : 'collapsed' }} yen-tho-faq-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $index }}" aria-expanded="{{ $index == 0 ? 'true' : 'false' }}" aria-controls="collapse{{ $index }}">
-                                <i class="bi bi-question-circle-fill me-3 yen-tho-faq-icon"></i>
-                                <span>{{ $faq['question'] }}</span>
-                            </button>
-                        </h2>
-                        <div id="collapse{{ $index }}" class="accordion-collapse collapse {{ $index == 0 ? 'show' : '' }}" aria-labelledby="heading{{ $index }}" data-bs-parent="#yenThoFaqAccordion">
-                            <div class="accordion-body yen-tho-faq-body">
-                                {!! nl2br(e($faq['answer'])) !!}
-                                @if(isset($faq['image']) && $faq['image'])
-                                <div class="text-center mt-4">
-                                    <img src="{{ asset($faq['image']) }}" alt="{{ $faq['question'] }}" class="img-fluid rounded shadow">
-                                </div>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
-            @endif
-        </div>
-    </section>
-</div>
+<!-- Category Information Section -->
+@if(request('category'))
+    @if(request('category') == 'Yến Thô')
+        @include('partials.yen-tho-info')
+    @elseif(request('category') == 'Yến Tinh Chế')
+        @include('partials.yen-tinh-che-info')
+    @elseif(request('category') == 'Yến Chưng Sẵn')
+        @include('partials.yen-chung-san-info')
+    @endif
 @endif
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Handle sort products

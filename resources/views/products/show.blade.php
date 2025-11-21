@@ -52,6 +52,14 @@
         <div class="col-md-7">
             <div class="product-info">
                 <h1 class="product-title">{{ $product->name }}</h1>
+                
+                @if($product->weight)
+                <div class="mb-3">
+                    <span class="badge" style="background-color: #28a745; color: white; font-size: 1rem; padding: 0.5rem 1rem;">
+                        <i class="bi bi-box-seam me-2"></i>{{ $product->weight }}
+                    </span>
+                </div>
+                @endif
 
                 <!-- Price -->
                 <div class="product-price">
@@ -66,6 +74,17 @@
 
                 <!-- Shipping Info -->
                 <div class="shipping-info">
+                    @if($product->weight)
+                    <div class="shipping-item">
+                        <div class="shipping-icon">
+                            <i class="bi bi-box-seam"></i>
+                        </div>
+                        <div class="shipping-text">
+                            <strong>Khối lượng</strong>
+                            <small>{{ $product->weight }}</small>
+                        </div>
+                    </div>
+                    @endif
                     <div class="shipping-item">
                         <div class="shipping-icon">
                             <i class="bi bi-truck"></i>
@@ -170,6 +189,57 @@
             </ul>
         </div>
     </div>
+
+    <!-- Related Products Section -->
+    @if($relatedProducts->count() > 0)
+    <div class="mt-5">
+        <h3 class="section-title mb-4">SẢN PHẨM LIÊN QUAN</h3>
+        <div class="row g-4">
+            @foreach($relatedProducts as $relatedProduct)
+            <div class="col-md-3 col-6">
+                <div class="product-block-card">
+                    <div class="product-block-image-wrapper" style="cursor: pointer;">
+                        <img src="{{ $relatedProduct->image ? asset('storage/'.$relatedProduct->image) : asset('images/products/product-1.jpg') }}" 
+                             class="product-block-image" alt="{{ $relatedProduct->name }}"
+                             onclick="window.location.href='{{ url('/products/' . $relatedProduct->id) }}'">
+                        @if($relatedProduct->has_sale)
+                        <div class="product-block-discount" onclick="window.location.href='{{ url('/products/' . $relatedProduct->id) }}'">-{{ $relatedProduct->discount_percent }}%</div>
+                        @endif
+                        @if($relatedProduct->weight)
+                        <div style="position: absolute; bottom: 10px; right: 10px; z-index: 5;" onclick="window.location.href='{{ url('/products/' . $relatedProduct->id) }}'">
+                            <span class="badge" style="background-color: #28a745; color: white; font-size: 0.85rem;">
+                                <i class="bi bi-box-seam me-1"></i>{{ $relatedProduct->weight }}
+                            </span>
+                        </div>
+                        @endif
+                        <form action="{{ url('/cart/add/' . $relatedProduct->id) }}" method="POST" class="add-to-cart-form d-inline" data-product-name="{{ $relatedProduct->name }}">
+                            @csrf
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="product-block-cart-icon">
+                                <i class="bi bi-cart-plus text-white fs-4"></i>
+                            </button>
+                        </form>
+                    </div>
+                    <div class="product-block-body" style="cursor: pointer;">
+                        <h5 class="product-block-title" onclick="window.location.href='{{ url('/products/' . $relatedProduct->id) }}'">{{ $relatedProduct->name }}</h5>
+                        <div class="product-block-price-section text-end" onclick="window.location.href='{{ url('/products/' . $relatedProduct->id) }}'">
+                            @if($relatedProduct->has_sale)
+                            <div>
+                                <span class="product-block-price-old">{{ number_format($relatedProduct->original_price ?? $relatedProduct->price) }}₫</span>
+                                <span class="product-block-price-new">{{ number_format($relatedProduct->display_price) }}₫</span>
+                            </div>
+                            @else
+                            <div><span class="product-block-price-new">{{ number_format($relatedProduct->price) }}₫</span></div>
+                            @endif
+                        </div>
+                        <button class="btn product-block-btn w-100 mt-2" onclick="window.location.href='{{ url('/products/' . $relatedProduct->id) }}'">Xem chi tiết</button>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
 </div>
 
 <script>

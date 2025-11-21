@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\NewsController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\AuthController;
@@ -14,6 +15,10 @@ Route::get('/', [ProductController::class, 'home'])->name('home');
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{product}', [ProductController::class, 'show']);
 Route::get('/promotions', [ProductController::class, 'promotions']);
+
+// News
+Route::get('/news', [NewsController::class, 'index']);
+Route::get('/news/{slug}', [NewsController::class, 'show']);
 
 // Cart
 Route::get('/cart', [CartController::class, 'index']);
@@ -51,7 +56,7 @@ Route::get('/test-cart', function () {
             'name' => $product->name,
             'price' => $product->price,
             'quantity' => $index + 1,
-            'image' => $product->image ?? 'products/default.jpg'
+            'image' => $product->image ?? 'products/error-404.png'
         ];
     }
     

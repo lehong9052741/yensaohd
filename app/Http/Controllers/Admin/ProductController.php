@@ -31,6 +31,7 @@ class ProductController extends Controller
             'discount_percent' => 'nullable|integer|min:0|max:100',
             'category' => 'nullable|string|max:255',
             'quantity' => 'required|integer|min:0',
+            'weight' => 'nullable|string|max:50',
             'is_best_seller' => 'nullable|boolean',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
@@ -63,6 +64,7 @@ class ProductController extends Controller
             'discount_percent' => 'nullable|integer|min:0|max:100',
             'category' => 'nullable|string|max:255',
             'quantity' => 'required|integer|min:0',
+            'weight' => 'nullable|string|max:50',
             'is_best_seller' => 'nullable|boolean',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);

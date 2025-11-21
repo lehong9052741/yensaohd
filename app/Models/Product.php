@@ -21,7 +21,8 @@ class Product extends Model
         'discount_percent',
         'is_best_seller',
         'sold_count',
-        'quantity'
+        'quantity',
+        'weight'
     ];
 
     /**

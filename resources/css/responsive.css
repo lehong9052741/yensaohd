@@ -364,6 +364,11 @@
         font-size: 1.3rem;
     }
 
+    .category-title-2 {
+        font-size: 1.3rem;
+        font-weight: 800;
+    }
+
     .info-description {
         font-size: 0.85rem;
     }

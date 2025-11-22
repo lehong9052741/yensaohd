@@ -3,13 +3,74 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CartController extends Controller
 {
+    /**
+     * Get session identifier for guest users
+     */
+    private function getSessionId()
+    {
+        if (!session()->has('cart_session_id')) {
+            session()->put('cart_session_id', uniqid('cart_', true));
+        }
+        return session('cart_session_id');
+    }
+
+    /**
+     * Get cart items from database
+     */
+    private function getCartItems()
+    {
+        $query = CartItem::with('product');
+        
+        if (auth()->check()) {
+            // For logged in users, get items by user_id OR session_id (for items added before login)
+            $query->where(function($q) {
+                $q->where('user_id', auth()->id())
+                  ->orWhere(function($q2) {
+                      $sessionId = session('cart_session_id');
+                      if ($sessionId) {
+                          $q2->where('session_id', $sessionId)
+                             ->whereNull('user_id');
+                      }
+                  });
+            });
+        } else {
+            $query->where('session_id', $this->getSessionId())
+                  ->whereNull('user_id');
+        }
+        
+        return $query->get();
+    }
+
+    /**
+     * Format cart items for view compatibility
+     */
+    private function formatCartForView($cartItems)
+    {
+        $cart = [];
+        foreach ($cartItems as $item) {
+            if ($item->product) {
+                $cart[$item->product_id] = [
+                    'id' => $item->product_id,
+                    'name' => $item->product->name,
+                    'price' => $item->price,
+                    'quantity' => $item->quantity,
+                    'image' => $item->product->image,
+                    'weight' => $item->product->weight,
+                ];
+            }
+        }
+        return $cart;
+    }
+
     public function index()
     {
         return view('cart');
@@ -19,31 +80,48 @@ class CartController extends Controller
     {
         $qty = max(1, (int) $request->input('quantity', 1));
 
-        $cart = session()->get('cart', []);
+        // Check if item already exists in cart
+        $cartItem = CartItem::where('product_id', $product->id)
+            ->where(function($query) {
+                if (auth()->check()) {
+                    $query->where('user_id', auth()->id());
+                } else {
+                    $query->where('session_id', $this->getSessionId());
+                }
+            })
+            ->first();
 
-        if (isset($cart[$product->id])) {
-            $cart[$product->id]['quantity'] += $qty;
+        if ($cartItem) {
+            // Update quantity if already exists
+            $cartItem->increment('quantity', $qty);
         } else {
-            $cart[$product->id] = [
-                'id' => $product->id,
-                'name' => $product->name,
-                'price' => $product->display_price,
+            // Create new cart item
+            CartItem::create([
+                'session_id' => $this->getSessionId(),
+                'user_id' => auth()->id(),
+                'product_id' => $product->id,
                 'quantity' => $qty,
-                'image' => $product->image,
-                'weight' => $product->weight,
-            ];
+                'price' => $product->display_price,
+            ]);
         }
 
-        session()->put('cart', $cart);
+        // Get updated cart for response
+        $cartItems = $this->getCartItems();
+        $cart = $this->formatCartForView($cartItems);
+        $total = $cartItems->sum(function($item) {
+            return $item->price * $item->quantity;
+        });
 
         if ($request->ajax() || $request->wantsJson()) {
-            $total = array_reduce($cart, function($s, $i) { return $s + ($i['price'] * $i['quantity']); }, 0);
-            
             return response()->json([
                 'success' => true,
                 'message' => 'Đã thêm "' . $product->name . '" vào giỏ hàng',
-                'cart_count' => count($cart),
-                'cart_html' => view('partials.cart-dropdown', ['cart' => $cart, 'cartCount' => count($cart), 'total' => $total])->render()
+                'cart_count' => $cartItems->count(),
+                'cart_html' => view('partials.cart-dropdown', [
+                    'cart' => $cart,
+                    'cartCount' => $cartItems->count(),
+                    'total' => $total
+                ])->render()
             ]);
         }
 
@@ -52,34 +130,130 @@ class CartController extends Controller
 
     public function remove(Request $request, $id)
     {
-        $cart = session()->get('cart', []);
-        $productName = '';
-
-        if (isset($cart[$id])) {
-            $productName = $cart[$id]['name'];
-            unset($cart[$id]);
-            session()->put('cart', $cart);
+        // Ensure session ID exists for guest users
+        if (!auth()->check()) {
+            $this->getSessionId();
+        }
+        
+        // Log for debugging
+        \Log::info('CartController::remove called', [
+            'product_id' => $id,
+            'auth_check' => auth()->check(),
+            'user_id' => auth()->id(),
+            'session_id' => $this->getSessionId(),
+        ]);
+        
+        // Find cart item - prioritize user_id for logged in users
+        if (auth()->check()) {
+            $cartItem = CartItem::where('product_id', $id)
+                ->where(function($query) {
+                    $query->where('user_id', auth()->id())
+                          ->orWhere(function($q2) {
+                              $sessionId = session('cart_session_id');
+                              if ($sessionId) {
+                                  $q2->where('session_id', $sessionId)
+                                     ->whereNull('user_id');
+                              }
+                          });
+                })
+                ->first();
+        } else {
+            $cartItem = CartItem::where('product_id', $id)
+                ->where('session_id', $this->getSessionId())
+                ->whereNull('user_id')
+                ->first();
         }
 
-        return redirect()->back()->with('cart_removed', 'Đã xóa "' . $productName . '" khỏi giỏ hàng');
+        \Log::info('CartItem found', ['cart_item' => $cartItem ? $cartItem->toArray() : null]);
+
+        $productName = '';
+        if ($cartItem) {
+            if ($cartItem->product) {
+                $productName = $cartItem->product->name;
+            }
+            // Delete from database
+            $deleted = $cartItem->delete();
+            \Log::info('CartItem deleted', ['success' => $deleted]);
+        } else {
+            \Log::warning('CartItem not found for removal');
+        }
+
+        // Get updated cart after deletion
+        $cartItems = $this->getCartItems();
+        $cart = $this->formatCartForView($cartItems);
+        $total = $cartItems->sum(function($item) {
+            return $item->price * $item->quantity;
+        });
+
+        // Support AJAX requests
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $productName ? 'Đã xóa "' . $productName . '" khỏi giỏ hàng' : 'Đã xóa sản phẩm khỏi giỏ hàng',
+                'cart_count' => $cartItems->count(),
+                'cart_html' => view('partials.cart-dropdown', [
+                    'cart' => $cart,
+                    'cartCount' => $cartItems->count(),
+                    'total' => $total
+                ])->render()
+            ]);
+        }
+
+        return redirect()->back()->with('cart_removed', $productName ? 'Đã xóa "' . $productName . '" khỏi giỏ hàng' : 'Đã xóa sản phẩm khỏi giỏ hàng');
     }
 
     public function update(Request $request, $id)
     {
+        // Ensure session ID exists for guest users
+        if (!auth()->check()) {
+            $this->getSessionId();
+        }
+        
         $qty = max(1, (int) $request->input('quantity', 1));
 
-        $cart = session()->get('cart', []);
+        // Find cart item - handle both logged in users and items from before login
+        if (auth()->check()) {
+            $cartItem = CartItem::where('product_id', $id)
+                ->where(function($query) {
+                    $query->where('user_id', auth()->id())
+                          ->orWhere(function($q2) {
+                              $sessionId = session('cart_session_id');
+                              if ($sessionId) {
+                                  $q2->where('session_id', $sessionId)
+                                     ->whereNull('user_id');
+                              }
+                          });
+                })
+                ->first();
+        } else {
+            $cartItem = CartItem::where('product_id', $id)
+                ->where('session_id', $this->getSessionId())
+                ->whereNull('user_id')
+                ->first();
+        }
 
-        if (isset($cart[$id])) {
-            $cart[$id]['quantity'] = $qty;
-            session()->put('cart', $cart);
+        if ($cartItem) {
+            // Update quantity in database
+            $cartItem->update(['quantity' => $qty]);
+            
+            // Get updated cart items
+            $cartItems = $this->getCartItems();
+            $cart = $this->formatCartForView($cartItems);
+            $total = $cartItems->sum(function($item) {
+                return $item->price * $item->quantity;
+            });
             
             // Support AJAX requests
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Cập nhật giỏ hàng thành công',
-                    'cart_count' => count($cart)
+                    'cart_count' => $cartItems->count(),
+                    'cart_html' => view('partials.cart-dropdown', [
+                        'cart' => $cart,
+                        'cartCount' => $cartItems->count(),
+                        'total' => $total
+                    ])->render()
                 ]);
             }
             
@@ -92,31 +266,40 @@ class CartController extends Controller
                 'message' => 'Sản phẩm không tồn tại trong giỏ hàng'
             ], 404);
         }
-        
+
         return redirect('/cart')->with('error', 'Sản phẩm không tồn tại trong giỏ hàng');
     }
 
     public function clear()
     {
-        session()->forget('cart');
+        CartItem::where(function($query) {
+            if (auth()->check()) {
+                $query->where('user_id', auth()->id());
+            } else {
+                $query->where('session_id', $this->getSessionId());
+            }
+        })->delete();
+        
         return redirect('/cart');
     }
 
     public function checkout()
     {
-        $cart = session()->get('cart', []);
+        // Get cart items from database
+        $cartItems = $this->getCartItems();
         
-        if (empty($cart)) {
+        if ($cartItems->isEmpty()) {
             return redirect('/cart')->with('error', 'Giỏ hàng của bạn đang trống');
         }
 
         // Clear previous order confirmation when starting new checkout
         session()->forget('order_confirmation');
 
-        $total = 0;
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
-        }
+        // Format cart for view
+        $cart = $this->formatCartForView($cartItems);
+        $total = $cartItems->sum(function($item) {
+            return $item->price * $item->quantity;
+        });
 
         return view('checkout', compact('cart', 'total'));
     }
@@ -136,9 +319,10 @@ class CartController extends Controller
             'online_method' => 'required_if:payment_method,online|in:bank,vnpay',
         ]);
 
-        $cart = session()->get('cart', []);
+        // Get cart items from database
+        $cartItems = $this->getCartItems();
         
-        if (empty($cart)) {
+        if ($cartItems->isEmpty()) {
             return redirect('/cart')->with('error', 'Giỏ hàng của bạn đang trống');
         }
 
@@ -146,10 +330,9 @@ class CartController extends Controller
         
         try {
             // Calculate totals
-            $subtotal = 0;
-            foreach ($cart as $item) {
-                $subtotal += $item['price'] * $item['quantity'];
-            }
+            $subtotal = $cartItems->sum(function($item) {
+                return $item->price * $item->quantity;
+            });
 
             $shipping_fee = $subtotal >= 1000000 ? 0 : 30000; // Free shipping over 1M
             $total = $subtotal + $shipping_fee;
@@ -188,28 +371,33 @@ class CartController extends Controller
             ]);
 
             // Create order items and update product quantities
-            foreach ($cart as $item) {
-                OrderItem::create([
-                    'order_id' => $order->id,
-                    'product_id' => $item['id'],
-                    'product_name' => $item['name'],
-                    'product_price' => $item['price'],
-                    'quantity' => $item['quantity'],
-                    'subtotal' => $item['price'] * $item['quantity'],
-                ]);
+            foreach ($cartItems as $cartItem) {
+                if ($cartItem->product) {
+                    OrderItem::create([
+                        'order_id' => $order->id,
+                        'product_id' => $cartItem->product_id,
+                        'product_name' => $cartItem->product->name,
+                        'product_price' => $cartItem->price,
+                        'quantity' => $cartItem->quantity,
+                        'subtotal' => $cartItem->price * $cartItem->quantity,
+                    ]);
 
-                // Update product quantity and sold count
-                $product = Product::find($item['id']);
-                if ($product) {
-                    $product->decrement('quantity', $item['quantity']);
-                    $product->increment('sold_count', $item['quantity']);
+                    // Update product quantity and sold count
+                    $cartItem->product->decrement('quantity', $cartItem->quantity);
+                    $cartItem->product->increment('sold_count', $cartItem->quantity);
                 }
             }
 
             DB::commit();
 
-            // Clear cart
-            session()->forget('cart');
+            // Clear cart from database
+            CartItem::where(function($query) {
+                if (auth()->check()) {
+                    $query->where('user_id', auth()->id());
+                } else {
+                    $query->where('session_id', $this->getSessionId());
+                }
+            })->delete();
             
             // If VNPay payment, redirect to VNPay
             if ($paymentMethod === 'online' && $onlineMethod === 'vnpay') {

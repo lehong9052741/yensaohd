@@ -1,3 +1,50 @@
+@php 
+    // Get cart from database
+    $cartItems = App\Models\CartItem::with('product')->where(function($query) {
+        if (auth()->check()) {
+            // For logged in users, get items by user_id OR session_id (for items added before login)
+            $query->where(function($q) {
+                $q->where('user_id', auth()->id())
+                  ->orWhere(function($q2) {
+                      $sessionId = session('cart_session_id');
+                      if ($sessionId) {
+                          $q2->where('session_id', $sessionId)
+                             ->whereNull('user_id');
+                      }
+                  });
+            });
+        } else {
+            $sessionId = session('cart_session_id');
+            if ($sessionId) {
+                $query->where('session_id', $sessionId)
+                      ->whereNull('user_id');
+            } else {
+                $query->whereRaw('1 = 0');
+            }
+        }
+    })->get();
+    
+    $cartCount = $cartItems->count();
+    $total = $cartItems->sum(function($item) {
+        return $item->price * $item->quantity;
+    });
+    
+    // Format cart for dropdown compatibility
+    $cart = [];
+    foreach($cartItems as $item) {
+        if ($item->product) {
+            $cart[$item->product_id] = [
+                'id' => $item->product_id,
+                'name' => $item->product->name,
+                'price' => $item->price,
+                'quantity' => $item->quantity,
+                'image' => $item->product->image,
+                'weight' => $item->product->weight,
+            ];
+        }
+    }
+@endphp
+
 <header id="mainHeader" class="fixed-top header-main">
     <!-- Top bar -->
     <div class="top-bar header-topbar">
@@ -47,39 +94,61 @@
                     </a>
 
                     <!-- Cart -->
-                    <a class="text-white d-flex align-items-center text-decoration-none position-relative" href="/cart">
-                        @php $cart = session('cart', []); $cartCount = count($cart); $total = array_reduce($cart, function($s,$i){return $s+($i['price']*$i['quantity']);},0); @endphp
-                        <div class="position-relative">
-                            <span class="material-icons-outlined text-white header-icon">shopping_cart</span>
-                            @if($cartCount > 0)
-                                <span id="cart-count-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-white fw-bold" style="font-size: 0.7rem;">{{ $cartCount }}</span>
-                            @else
-                                <span id="cart-count-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-white fw-bold d-none" style="font-size: 0.7rem;">0</span>
-                            @endif
+                    <div class="dropdown">
+                        <a class="text-white d-flex align-items-center text-decoration-none" href="/cart">
+                            <div class="position-relative">
+                                <span class="material-icons-outlined text-white header-icon cart-icon">shopping_cart</span>
+                                @if($cartCount > 0)
+                                    <span id="cart-count-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-white fw-bold" style="font-size: 0.7rem;">{{ $cartCount }}</span>
+                                @else
+                                    <span id="cart-count-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-white fw-bold d-none" style="font-size: 0.7rem;">0</span>
+                                @endif
+                            </div>
+                            <div class="d-none d-lg-block ms-2">
+                                <div class="fw-medium">Giỏ hàng</div>
+                            </div>
+                        </a>
+                        
+                        <!-- Cart Dropdown -->
+                        <div class="header-cart-dropdown" id="cart-dropdown-content">
+                            @include('partials.cart-dropdown', ['cart' => $cart, 'cartCount' => $cartCount, 'total' => $total])
                         </div>
-                        <div class="d-none d-lg-block ms-2">
-                            <div class="fw-medium">Giỏ hàng</div>
-                        </div>
-                    </a>
+                    </div>
                     
                     <!-- Mobile Menu Toggle -->
                     <button class="btn btn-link text-white p-0 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
                         <span class="material-icons-outlined header-icon">menu</span>
                     </button>
 
+                    <!-- User Menu (desktop only) -->
                     @auth
-                        <a href="{{ route('admin.products.index') }}" class="btn btn-sm btn-warning text-white d-none d-lg-inline">Quản trị</a>
-                    @endauth
-
-                    <!-- Login (desktop only) -->
-                    @guest
+                        <div class="dropdown d-none d-lg-block">
+                            <a class="text-white d-flex align-items-center text-decoration-none dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="material-icons-outlined text-white header-icon">account_circle</span>
+                                <div class="ms-2">
+                                    <div class="fw-medium">{{ auth()->user()->name }}</div>
+                                </div>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{{ route('admin.products.index') }}"><i class="bi bi-gear me-2"></i>Quản trị</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    @else
+                        <!-- Login (desktop only) -->
                         <a class="text-white d-none d-lg-flex align-items-center text-decoration-none" href="{{ route('login') }}">
                             <span class="material-icons-outlined text-white header-icon">login</span>
                             <div class="ms-2">
                                 <div class="fw-medium">Đăng nhập</div>
                             </div>
                         </a>
-                    @endguest
+                    @endauth
                 </div>
             </div>
 
@@ -172,13 +241,17 @@
             
             @auth
             <li><a class="mobile-menu-item" href="{{ route('admin.products.index') }}"><i class="bi bi-gear me-2"></i>Quản trị</a></li>
+            <li>
+                <form action="{{ route('logout') }}" method="POST" class="m-0">
+                    @csrf
+                    <button type="submit" class="mobile-menu-item w-100 text-start border-0 bg-transparent text-danger">
+                        <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
+                    </button>
+                </form>
+            </li>
             @endauth
         </ul>
     </div>
-</div>
-
-<div id="cart-dropdown" class="d-none">
-    @include('partials.cart-dropdown', ['cart' => $cart, 'cartCount' => $cartCount, 'total' => $total])
 </div>
 
 <script>

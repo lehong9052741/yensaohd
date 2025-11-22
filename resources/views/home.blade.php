@@ -190,7 +190,10 @@
                                 </span>
                             </div>
                             @endif
-                            <form action="{{ url('/cart/add/' . $product->id) }}" method="POST" class="add-to-cart-form d-inline" data-product-name="{{ $product->name }}">
+                            <form action="{{ url('/cart/add/' . $product->id) }}" method="POST" class="add-to-cart-form d-inline" 
+                                  data-product-name="{{ $product->name }}"
+                                  data-product-image="{{ $product->image ? asset('storage/'.$product->image) : asset('images/products/product-1.jpg') }}"
+                                  data-product-price="{{ number_format($product->display_price ?? $product->price, 0, ',', '.') }}">
                                 @csrf
                                 <input type="hidden" name="quantity" value="1">
                                 <button type="submit" class="product-block-cart-icon">
@@ -257,7 +260,10 @@
                                 </span>
                             </div>
                             @endif
-                            <form action="{{ url('/cart/add/' . $product->id) }}" method="POST" class="add-to-cart-form d-inline" data-product-name="{{ $product->name }}">
+                            <form action="{{ url('/cart/add/' . $product->id) }}" method="POST" class="add-to-cart-form d-inline" 
+                                  data-product-name="{{ $product->name }}"
+                                  data-product-image="{{ $product->image ? asset('storage/'.$product->image) : asset('images/products/product-1.jpg') }}"
+                                  data-product-price="{{ number_format($product->display_price ?? $product->price, 0, ',', '.') }}">
                                 @csrf
                                 <input type="hidden" name="quantity" value="1">
                                 <button type="submit" class="product-block-cart-icon">
@@ -324,7 +330,10 @@
                                 </span>
                             </div>
                             @endif
-                            <form action="{{ url('/cart/add/' . $product->id) }}" method="POST" class="add-to-cart-form d-inline" data-product-name="{{ $product->name }}">
+                            <form action="{{ url('/cart/add/' . $product->id) }}" method="POST" class="add-to-cart-form d-inline" 
+                                  data-product-name="{{ $product->name }}"
+                                  data-product-image="{{ $product->image ? asset('storage/'.$product->image) : asset('images/products/product-1.jpg') }}"
+                                  data-product-price="{{ number_format($product->display_price ?? $product->price, 0, ',', '.') }}">
                                 @csrf
                                 <input type="hidden" name="quantity" value="1">
                                 <button type="submit" class="product-block-cart-icon">
@@ -378,7 +387,11 @@
     <!-- Customer Reviews Carousel -->
     <div class="container">
         <section class="mb-5">
-            <h4 class="text-center mb-4 fw-bold">Ý Kiến Khách Hàng</h4>
+            <div class="text-center mb-4">
+                <h2 class="fw-bold d-inline-block mb-0" style="border-bottom: 3px solid #dc3545; padding-bottom: 0.5rem; color: #936f03;">
+                    <i class="bi bi-chat-quote me-2"></i>Ý Kiến Khách Hàng
+                </h2>
+            </div>
             @if(isset($customerReviews) && count($customerReviews) > 0)
             <div id="customerReviewsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
                 <div class="carousel-indicators">
@@ -434,8 +447,8 @@
     <!-- News Section -->
     <div class="container">
         <section class="mb-5">
-            <div class="news-title-wrapper mb-4">
-                <h2 class="news-title mb-0">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold d-inline-block mb-0" style="border-bottom: 3px solid #dc3545; padding-bottom: 0.5rem; color: #936f03;">
                     <i class="bi bi-newspaper me-2"></i>Tin Tức Nổi Bật
                 </h2>
             </div>
@@ -506,12 +519,12 @@
                         </a>
                         @endforeach
                     </div>
+                    <div class="text-center mt-4">
+                        <a href="{{ url('/news') }}" class="btn btn-outline-danger btn-lg" style="text-transform: uppercase; font-weight: 600; border-width: 2px; padding: 0.6rem 2rem;">
+                            XEM THÊM
+                        </a>
+                    </div>
                 </div>
-            </div>
-            <div class="text-center mt-4">
-                <a href="{{ url('/news') }}" class="btn btn-outline-danger btn-lg" style="text-transform: uppercase; font-weight: 600; border-width: 2px; padding: 0.6rem 2rem;">
-                    XEM THÊM
-                </a>
             </div>
             @else
             <div class="row">
@@ -569,6 +582,8 @@
                 
                 const formData = new FormData(this);
                 const productName = this.dataset.productName;
+                const productImage = this.dataset.productImage;
+                const productPrice = this.dataset.productPrice;
                 
                 fetch(this.action, {
                     method: 'POST',
@@ -580,8 +595,12 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Show toast notification
-                        showToast('success', data.message || 'Đã thêm "' + productName + '" vào giỏ hàng');
+                        // Show toast notification with product info
+                        showToast('success', {
+                            name: productName,
+                            image: productImage,
+                            price: productPrice
+                        });
                         
                         // Update cart count badge
                         const cartBadge = document.getElementById('cart-count-badge');
@@ -593,9 +612,13 @@
                         }
                         
                         // Update cart dropdown HTML
-                        const cartDropdown = document.getElementById('cart-dropdown');
-                        if (cartDropdown && data.cart_html) {
-                            cartDropdown.innerHTML = data.cart_html;
+                        const cartDropdownContent = document.getElementById('cart-dropdown-content');
+                        if (cartDropdownContent && data.cart_html) {
+                            cartDropdownContent.innerHTML = data.cart_html;
+                            // Re-attach event listeners to new dropdown content
+                            if (typeof window.attachCartDropdownListeners === 'function') {
+                                window.attachCartDropdownListeners();
+                            }
                         }
                     } else {
                         showToast('error', data.message || 'Có lỗi xảy ra');
@@ -609,24 +632,51 @@
         });
         
         // Toast notification function
-        function showToast(type, message) {
+        function showToast(type, data) {
             const toastContainer = document.querySelector('.toast-container');
             if (!toastContainer) return;
             
             const toastId = 'toast-' + Date.now();
-            const bgClass = type === 'success' ? 'bg-success' : 'bg-danger';
-            const icon = type === 'success' ? 'bi-check-circle' : 'bi-x-circle';
             
-            const toastHtml = `
-                <div id="${toastId}" class="toast align-items-center text-white ${bgClass} border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            <i class="bi ${icon} me-2"></i>${message}
+            let toastHtml = '';
+            
+            if (type === 'success' && typeof data === 'object' && data.name) {
+                // Success toast with product info
+                toastHtml = `
+                    <div id="${toastId}" class="toast text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="4000" style="min-width: 350px;">
+                        <div class="toast-body p-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-check-circle me-2 fs-5"></i>
+                                <strong>Thêm sản phẩm thành công</strong>
+                                <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                            <div class="d-flex align-items-center gap-3 mt-2">
+                                <img src="${data.image}" alt="${data.name}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                                <div class="flex-grow-1">
+                                    <div class="fw-medium" style="font-size: 0.95rem;">${data.name}</div>
+                                    <div class="mt-1" style="font-size: 0.9rem; opacity: 0.95;">${data.price}₫</div>
+                                </div>
+                            </div>
                         </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                     </div>
-                </div>
-            `;
+                `;
+            } else {
+                // Simple error toast
+                const message = typeof data === 'string' ? data : data.message || 'Có lỗi xảy ra';
+                const bgClass = type === 'success' ? 'bg-success' : 'bg-danger';
+                const icon = type === 'success' ? 'bi-check-circle' : 'bi-x-circle';
+                
+                toastHtml = `
+                    <div id="${toastId}" class="toast align-items-center text-white ${bgClass} border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <i class="bi ${icon} me-2"></i>${message}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+            }
             
             toastContainer.insertAdjacentHTML('beforeend', toastHtml);
             

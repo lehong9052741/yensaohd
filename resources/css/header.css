@@ -144,33 +144,56 @@
 
 /* Hover effect for header items - removed borders from phone, cart, login */
 
+/* Cart dropdown container */
+.dropdown {
+  position: relative;
+}
+
 /* Cart dropdown */
 .header-cart-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
   width: 320px;
   margin-top: 0 !important;
   padding-top: 0.5rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
   display: block !important;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(10px);
+  transform: translateY(-10px);
   transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
   pointer-events: none;
 }
 
-/* Keep dropdown open when hovering over cart or dropdown itself */
-.dropdown:hover > .header-cart-dropdown {
-  opacity: 1 !important;
-  visibility: visible !important;
-  transform: translateY(0) !important;
-  pointer-events: auto !important;
+/* Create invisible bridge between cart icon and dropdown */
+.header-cart-dropdown::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0.5rem;
+  background: transparent;
 }
 
-/* Prevent dropdown from closing when hovering inside */
+/* Keep dropdown open when hovering over cart link */
+.dropdown:hover > .header-cart-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Keep dropdown open when mouse is inside the dropdown */
 .header-cart-dropdown:hover {
-  opacity: 1 !important;
-  visibility: visible !important;
-  transform: translateY(0) !important;
-  pointer-events: auto !important;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 /* Cart item hover effect */
@@ -185,13 +208,19 @@
 
 /* Remove button styling */
 .remove-cart-btn {
-  opacity: 0.6;
+  opacity: 0.7;
   transition: opacity 0.2s ease, transform 0.2s ease;
+  text-decoration: none !important;
 }
 
 .remove-cart-btn:hover {
   opacity: 1;
-  transform: scale(1.1);
+  transform: scale(1.15);
+}
+
+.remove-cart-btn:focus {
+  box-shadow: none;
+  outline: none;
 }
 
 .cart-item {

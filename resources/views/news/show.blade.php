@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', $article['title'] . ' - Yến Sào Hoàng Đăng')
+@section('title', $article->title . ' - Yến Sào Hoàng Đăng')
 
 @section('content')
 <div class="container my-5">
@@ -13,47 +13,49 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ url('/') }}">Trang chủ</a></li>
                         <li class="breadcrumb-item"><a href="{{ url('/news') }}">Tin tức</a></li>
-                        <li class="breadcrumb-item active">{{ $article['title'] }}</li>
+                        <li class="breadcrumb-item active">{{ $article->title }}</li>
                     </ol>
                 </nav>
 
                 <!-- Article Header -->
                 <header class="mb-4">
                     <div class="mb-3">
-                        <span class="badge bg-warning text-dark">{{ $article['category'] }}</span>
+                        <span class="badge bg-warning text-dark">{{ $article->category ?? 'Tin tức' }}</span>
                     </div>
-                    <h1 class="article-title">{{ $article['title'] }}</h1>
+                    <h1 class="article-title">{{ $article->title }}</h1>
                     <div class="article-meta">
                         <span class="me-3">
                             <i class="bi bi-person-circle"></i>
-                            {{ $article['author'] }}
+                            {{ $article->author }}
                         </span>
                         <span class="me-3">
                             <i class="bi bi-calendar3"></i>
-                            {{ date('d/m/Y', strtotime($article['published_at'])) }}
+                            {{ $article->published_at ? $article->published_at->format('d/m/Y') : $article->created_at->format('d/m/Y') }}
                         </span>
                         <span>
                             <i class="bi bi-eye"></i>
-                            {{ number_format($article['views']) }} lượt xem
+                            {{ number_format($article->views) }} lượt xem
                         </span>
                     </div>
                 </header>
 
                 <!-- Featured Image -->
                 <div class="article-image mb-4">
-                    <img src="{{ $article['image'] }}" 
-                         alt="{{ $article['title'] }}" 
+                    <img src="{{ $article->image ? asset('storage/'.$article->image) : asset('images/banners/logo.png') }}" 
+                         alt="{{ $article->title }}" 
                          class="img-fluid rounded"
                          onerror="this.src='/images/error/error-404.png'">
                 </div>
 
                 <!-- Article Content -->
                 <div class="article-content">
+                    @if($article->excerpt)
                     <div class="article-excerpt">
-                        <strong>{{ $article['excerpt'] }}</strong>
+                        <strong>{{ $article->excerpt }}</strong>
                     </div>
+                    @endif
                     <div class="article-body">
-                        {!! nl2br($article['content']) !!}
+                        {!! nl2br($article->content) !!}
                     </div>
                 </div>
 
@@ -66,7 +68,7 @@
                            class="btn btn-primary btn-sm">
                             <i class="bi bi-facebook"></i> Facebook
                         </a>
-                        <a href="https://twitter.com/intent/tweet?url={{ url()->current() }}&text={{ $article['title'] }}" 
+                        <a href="https://twitter.com/intent/tweet?url={{ url()->current() }}&text={{ $article->title }}" 
                            target="_blank" 
                            class="btn btn-info btn-sm text-white">
                             <i class="bi bi-twitter"></i> Twitter
@@ -81,25 +83,25 @@
             </article>
 
             <!-- Related Articles -->
-            @if(count($relatedNews) > 0)
+            @if($relatedNews->count() > 0)
             <section class="related-articles mt-5">
                 <h3 class="mb-4">Bài viết liên quan</h3>
                 <div class="row g-4">
                     @foreach($relatedNews as $related)
                     <div class="col-md-4">
                         <article class="related-card">
-                            <a href="{{ url('/news/' . $related['slug']) }}" class="text-decoration-none">
+                            <a href="{{ url('/news/' . $related->slug) }}" class="text-decoration-none">
                                 <div class="related-image-wrapper">
-                                    <img src="{{ $related['image'] }}" 
-                                         alt="{{ $related['title'] }}"
+                                    <img src="{{ $related->image ? asset('storage/'.$related->image) : asset('images/banners/logo.png') }}" 
+                                         alt="{{ $related->title }}"
                                          class="related-image"
                                          onerror="this.src='/images/error/error-404.png'">
                                 </div>
                                 <div class="related-body">
-                                    <h5 class="related-title">{{ $related['title'] }}</h5>
+                                    <h5 class="related-title">{{ $related->title }}</h5>
                                     <span class="related-date">
                                         <i class="bi bi-calendar3"></i>
-                                        {{ date('d/m/Y', strtotime($related['published_at'])) }}
+                                        {{ $related->published_at ? $related->published_at->format('d/m/Y') : $related->created_at->format('d/m/Y') }}
                                     </span>
                                 </div>
                             </a>
@@ -119,22 +121,17 @@
                     <h4 class="widget-title">Bài viết phổ biến</h4>
                     <div class="popular-posts">
                         @php
-                        $newsPath = public_path('data/news.json');
-                        $allNews = json_decode(file_get_contents($newsPath), true);
-                        usort($allNews, function($a, $b) {
-                            return $b['views'] - $a['views'];
-                        });
-                        $popularNews = array_slice($allNews, 0, 5);
+                        $popularNews = App\Models\News::orderBy('views', 'desc')->take(5)->get();
                         @endphp
                         
                         @foreach($popularNews as $index => $popular)
                         <div class="popular-post">
                             <span class="post-number">{{ $index + 1 }}</span>
                             <div class="post-content">
-                                <a href="{{ url('/news/' . $popular['slug']) }}" class="post-link">
-                                    {{ $popular['title'] }}
+                                <a href="{{ url('/news/' . $popular->slug) }}" class="post-link">
+                                    {{ $popular->title }}
                                 </a>
-                                <span class="post-views">{{ number_format($popular['views']) }} lượt xem</span>
+                                <span class="post-views">{{ number_format($popular->views) }} lượt xem</span>
                             </div>
                         </div>
                         @endforeach
@@ -146,7 +143,10 @@
                     <h4 class="widget-title">Danh mục</h4>
                     <ul class="category-list">
                         @php
-                        $categories = array_unique(array_column($allNews, 'category'));
+                        $categories = App\Models\News::whereNotNull('category')
+                            ->distinct()
+                            ->pluck('category')
+                            ->filter();
                         @endphp
                         @foreach($categories as $cat)
                         <li>

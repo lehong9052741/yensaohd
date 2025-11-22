@@ -31,11 +31,50 @@
     </div>
 
     @php 
-        $cart = session('cart', []); 
+        // Get cart items from database
+        $cartItems = App\Models\CartItem::with('product')
+            ->where(function($query) {
+                if (auth()->check()) {
+                    // For logged in users, get items by user_id OR session_id (for items added before login)
+                    $query->where(function($q) {
+                        $q->where('user_id', auth()->id())
+                          ->orWhere(function($q2) {
+                              $sessionId = session('cart_session_id');
+                              if ($sessionId) {
+                                  $q2->where('session_id', $sessionId)
+                                     ->whereNull('user_id');
+                              }
+                          });
+                    });
+                } else {
+                    $sessionId = session('cart_session_id');
+                    if ($sessionId) {
+                        $query->where('session_id', $sessionId)
+                              ->whereNull('user_id');
+                    } else {
+                        $query->whereRaw('1 = 0'); // No items
+                    }
+                }
+            })
+            ->get();
+        
+        // Format for view compatibility
+        $cart = [];
         $subtotal = 0;
-        foreach($cart as $item) {
-            $subtotal += $item['price'] * $item['quantity'];
+        foreach($cartItems as $item) {
+            if ($item->product) {
+                $cart[$item->product_id] = [
+                    'id' => $item->product_id,
+                    'name' => $item->product->name,
+                    'price' => $item->price,
+                    'quantity' => $item->quantity,
+                    'image' => $item->product->image,
+                    'weight' => $item->product->weight,
+                ];
+                $subtotal += $item->price * $item->quantity;
+            }
         }
+        
         $shipping = 0; // Free shipping
         $total = $subtotal + $shipping;
     @endphp
@@ -45,7 +84,7 @@
             <i class="bi bi-cart-x"></i>
             <h3>Giỏ hàng của bạn đang trống</h3>
             <a href="/products" class="btn btn-primary btn-lg">
-                <i class="bi bi-shop me-2"></i>Tiếp tục mua sắm
+                Tiếp tục mua sắm
             </a>
         </div>
     @else
@@ -160,6 +199,125 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Function to attach dropdown event listeners (defined globally in this scope)
+    function attachDropdownListeners() {
+        const dropdown = document.getElementById('cart-dropdown-content');
+        if (!dropdown) return;
+        
+        // Remove old listeners by cloning
+        const newDropdown = dropdown.cloneNode(true);
+        dropdown.parentNode.replaceChild(newDropdown, dropdown);
+        
+        newDropdown.addEventListener('submit', function(e) {
+            if (e.target.classList.contains('remove-cart-item-form')) {
+                e.preventDefault();
+                
+                const form = e.target;
+                const cartItem = form.closest('.cart-item');
+                const itemId = cartItem.dataset.itemId;
+                
+                // Add fade out animation
+                cartItem.style.transition = 'opacity 0.3s ease';
+                cartItem.style.opacity = '0';
+                
+                // Send AJAX request
+                fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update cart page if we're on it
+                        const cartPageRow = document.querySelector(`.cart-item-row[data-item-id="${itemId}"]`);
+                        if (cartPageRow) {
+                            cartPageRow.style.transition = 'opacity 0.3s ease';
+                            cartPageRow.style.opacity = '0';
+                            setTimeout(() => {
+                                cartPageRow.remove();
+                                updateCartTotals();
+                                
+                                // Check if cart is empty
+                                const remainingItems = document.querySelectorAll('.cart-item-row');
+                                if (remainingItems.length === 0) {
+                                    window.location.reload();
+                                }
+                            }, 300);
+                        }
+                        
+                        // Remove item after animation
+                        setTimeout(() => {
+                            cartItem.remove();
+                            
+                            // Update cart count in badge
+                            const cartBadge = document.getElementById('cart-count-badge');
+                            const dropdownCount = document.getElementById('dropdown-cart-count');
+                            
+                            if (cartBadge) {
+                                cartBadge.textContent = data.cart_count;
+                                if (data.cart_count === 0) {
+                                    cartBadge.classList.add('d-none');
+                                }
+                            }
+                            
+                            if (dropdownCount) {
+                                dropdownCount.textContent = data.cart_count;
+                            }
+                            
+                            // Check if cart is empty in dropdown
+                            const remainingItems = document.querySelectorAll('#dropdown-cart-items .cart-item');
+                            if (remainingItems.length === 0) {
+                                // Show empty message
+                                const cartItemsContainer = document.getElementById('dropdown-cart-items');
+                                const footer = document.getElementById('dropdown-cart-footer');
+                                
+                                if (cartItemsContainer) {
+                                    cartItemsContainer.innerHTML = `
+                                        <div class="text-center py-4" id="empty-cart-message" style="color: #666;">
+                                            <i class="bi bi-cart" style="font-size: 3rem; color: #999;"></i>
+                                            <p class="mt-2 mb-0">Giỏ hàng trống</p>
+                                        </div>
+                                    `;
+                                }
+                                
+                                if (footer) {
+                                    footer.remove();
+                                }
+                            } else {
+                                // Update total if items remain
+                                updateDropdownTotal();
+                            }
+                        }, 300);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    cartItem.style.opacity = '1';
+                });
+            }
+        });
+    }
+    
+    // Function to update dropdown total
+    function updateDropdownTotal() {
+        const remainingItems = document.querySelectorAll('#dropdown-cart-items .cart-item');
+        let total = 0;
+        
+        remainingItems.forEach(item => {
+            const price = parseFloat(item.dataset.price) || 0;
+            const quantity = parseInt(item.dataset.quantity) || 0;
+            total += price * quantity;
+        });
+        
+        const totalElement = document.getElementById('dropdown-cart-total');
+        if (totalElement) {
+            totalElement.textContent = new Intl.NumberFormat('vi-VN').format(total) + '₫';
+        }
+    }
+    
     // Handle quantity increase/decrease
     document.querySelectorAll('.qty-decrease, .qty-increase').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -220,6 +378,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 const cartBadge = document.getElementById('cart-count-badge');
                 if (cartBadge && data.cart_count !== undefined) {
                     cartBadge.textContent = data.cart_count;
+                    if (data.cart_count === 0) {
+                        cartBadge.classList.add('d-none');
+                    } else {
+                        cartBadge.classList.remove('d-none');
+                    }
+                }
+                
+                // Update cart dropdown HTML
+                const cartDropdownContent = document.getElementById('cart-dropdown-content');
+                if (cartDropdownContent && data.cart_html) {
+                    cartDropdownContent.innerHTML = data.cart_html;
+                    // Re-attach event listeners to new dropdown content
+                    if (typeof window.attachCartDropdownListeners === 'function') {
+                        window.attachCartDropdownListeners();
+                    }
                 }
             }
         })
@@ -254,14 +427,121 @@ document.addEventListener('DOMContentLoaded', function() {
         }).format(amount) + '₫';
     }
     
-    // Handle remove item
+    // Handle remove item with AJAX
     document.querySelectorAll('.remove-item-form').forEach(form => {
         form.addEventListener('submit', function(e) {
-            if (!confirm('Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?')) {
-                e.preventDefault();
-            }
+            e.preventDefault();
+            
+            const row = this.closest('.cart-item-row');
+            const itemId = row.dataset.itemId;
+            
+            console.log('Removing item:', itemId, 'Action:', this.action);
+            
+            // Add fade out animation
+            row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            row.style.opacity = '0';
+            row.style.transform = 'translateX(20px)';
+            
+            // Send AJAX request to delete from database
+            fetch(this.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                if (data.success) {
+                    // Remove the row after animation
+                    setTimeout(() => {
+                        row.remove();
+                        
+                        // Check if cart is empty
+                        const remainingItems = document.querySelectorAll('.cart-item-row');
+                        if (remainingItems.length === 0) {
+                            // Reload to show empty cart message
+                            window.location.reload();
+                        } else {
+                            // Update cart totals
+                            updateCartTotals();
+                        }
+                        
+                        // Update cart count in header
+                        const cartBadge = document.getElementById('cart-count-badge');
+                        if (cartBadge && data.cart_count !== undefined) {
+                            cartBadge.textContent = data.cart_count;
+                            if (data.cart_count === 0) {
+                                cartBadge.classList.add('d-none');
+                            }
+                        }
+                        
+                        // Update cart dropdown in header
+                        const cartDropdownContent = document.getElementById('cart-dropdown-content');
+                        if (cartDropdownContent && data.cart_html) {
+                            cartDropdownContent.innerHTML = data.cart_html;
+                            
+                            // Re-attach event listeners for dropdown after updating HTML
+                            attachDropdownListeners();
+                        }
+                    }, 300);
+                    
+                    // Show success toast with red background for delete action
+                    showToast('danger', data.message || 'Đã xóa sản phẩm khỏi giỏ hàng');
+                } else {
+                    // Revert animation on error
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateX(0)';
+                    showToast('error', data.message || 'Có lỗi xảy ra');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                row.style.opacity = '1';
+                row.style.transform = 'translateX(0)';
+                showToast('error', 'Không thể xóa sản phẩm');
+            });
         });
     });
+    
+    // Attach dropdown listeners on page load
+    attachDropdownListeners();
+    
+    // Toast notification function
+    function showToast(type, message) {
+        const toastContainer = document.querySelector('.toast-container');
+        if (!toastContainer) return;
+        
+        const toastId = 'toast-' + Date.now();
+        const bgClass = type === 'danger' ? 'bg-danger' : (type === 'success' ? 'bg-success' : 'bg-danger');
+        const icon = type === 'danger' ? 'bi-trash' : (type === 'success' ? 'bi-check-circle' : 'bi-x-circle');
+        
+        const toastHtml = `
+            <div id="${toastId}" class="toast align-items-center text-white ${bgClass} border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="bi ${icon} me-2"></i>${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        `;
+        
+        toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+        
+        const toastElement = document.getElementById(toastId);
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
+        
+        // Remove toast after it's hidden
+        toastElement.addEventListener('hidden.bs.toast', function() {
+            this.remove();
+        });
+    }
 });
 </script>
 
